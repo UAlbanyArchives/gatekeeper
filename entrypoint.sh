@@ -1,4 +1,4 @@
 #!/bin/sh
 
 # Run the Flask app
-exec python3 app/main.py
+exec gunicorn --bind 0.0.0.0:5000 app.main:app
