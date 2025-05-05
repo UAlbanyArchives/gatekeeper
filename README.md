@@ -14,7 +14,6 @@ services:
     environment:
       - TURNSTILE_SECRET=your_turnstile_secret
       - TURNSTILE_SITEKEY=your_turnstile_sitekey
-      - APP_BACKEND=http://nginx_or_passenger_host/
 ```
 
 ## Run
