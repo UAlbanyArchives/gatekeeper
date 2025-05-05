@@ -19,8 +19,7 @@ services:
 ## Run
 
 ```
-docker-compose build
-docker-compose up
+docker-compose up --build
 ```
 
 Serves on :8000

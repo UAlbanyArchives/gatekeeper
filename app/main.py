@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response, redirect, render_template_string
+from flask import Flask, request, make_response, redirect, render_template
 import requests
 import os
 
@@ -35,23 +35,7 @@ def challenge():
         return "Verification failed", 403
 
     next_url = request.args.get("next", "/")
-    html = f"""
-    <!doctype html>
-    <html>
-    <head>
-        <title>Verification Required</title>
-        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-    </head>
-    <body>
-        <form method="POST">
-            <div class="cf-turnstile" data-sitekey="{TURNSTILE_SITEKEY}"></div>
-            <input type="hidden" name="next" value="{next_url}">
-            <button type="submit">Verify</button>
-        </form>
-    </body>
-    </html>
-    """
-    return render_template_string(html)
+    return render_template("challenge.html", sitekey=TURNSTILE_SITEKEY, next_url=next_url)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
