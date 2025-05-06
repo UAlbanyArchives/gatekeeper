@@ -19,7 +19,9 @@ services:
 ## Run
 
 ```
-docker-compose up --build
+docker-compose up -d --build
 ```
+
+`--build rebuilds it on each run.`
 
 Serves on :8000

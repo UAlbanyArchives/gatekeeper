@@ -17,6 +17,9 @@ def auth():
 # This is shown to users when auth fails
 @app.route("/challenge", methods=["GET", "POST"])
 def challenge():
+    # Get the next URL, defaulting to '/' if not provided
+    next_url = request.args.get("next", "/")
+
     if request.method == "POST" and "cf-turnstile-response" in request.form:
         # Validate with Cloudflare
         resp = requests.post(
@@ -28,13 +31,12 @@ def challenge():
             }
         )
         if resp.json().get("success"):
-            next_url = request.form.get("next", "/")
-            response = make_response(redirect(next_url))
+            response = make_response(redirect(next_url))  # Use the next URL after success
             response.set_cookie("turnstile_verified", "1", max_age=3600)
             return response
         return "Verification failed", 403
 
-    next_url = request.args.get("next", "/")
+    # Pass the next_url to the template to include in the form
     return render_template("challenge.html", sitekey=TURNSTILE_SITEKEY, next_url=next_url)
 
 if __name__ == "__main__":
