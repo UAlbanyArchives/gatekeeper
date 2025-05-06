@@ -8,30 +8,33 @@ app = Flask(__name__)
 TURNSTILE_SECRET = os.environ["TURNSTILE_SECRET"]
 TURNSTILE_SITEKEY = os.environ["TURNSTILE_SITEKEY"]
 
-# Clear any default handlers
+# Get desired log level from environment (default: WARNING)
+LOG_LEVEL = os.environ.get("LOG_LEVEL", "WARNING").upper()
+
+# Configure logging
 for handler in app.logger.handlers:
     app.logger.removeHandler(handler)
 
-# Set up a new handler that writes to stdout
 handler = logging.StreamHandler()
-handler.setLevel(logging.DEBUG)
+handler.setLevel(LOG_LEVEL)
 formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
 handler.setFormatter(formatter)
+
 app.logger.addHandler(handler)
+app.logger.setLevel(LOG_LEVEL)
 
-# Set global log level
-app.logger.setLevel(logging.DEBUG)
-
-# This is used internally by Nginx as auth_request
+# Routes
 @app.route("/auth", methods=["GET", "HEAD"])
 def auth():
-    if request.cookies.get("turnstile_verified") == "1":
+    cookie = request.cookies.get("turnstile_verified")
+    app.logger.debug(f"turnstile_verified cookie: {cookie}")
+    if cookie == "1":
         return "", 200
     return "", 401
 
-# This is shown to users when auth fails
 @app.route("/challenge", methods=["GET", "POST"])
 def challenge():
+    app.logger.debug(f"Request cookies: {request.cookies}")
     next_url = request.args.get("next", "/")
     app.logger.debug(f"Challenge requested. Method: {request.method}, next_url: {next_url}")
 
@@ -43,7 +46,6 @@ def challenge():
             app.logger.warning("Turnstile token missing from POST.")
             return "Verification failed", 403
 
-        # Validate token with Cloudflare
         try:
             resp = requests.post(
                 "https://challenges.cloudflare.com/turnstile/v0/siteverify",
@@ -72,4 +74,3 @@ def challenge():
 
 if __name__ == "__main__":
     app.run()
-
