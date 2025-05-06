@@ -3,6 +3,11 @@ import logging
 import requests
 import os
 
+app = Flask(__name__)
+
+TURNSTILE_SECRET = os.environ["TURNSTILE_SECRET"]
+TURNSTILE_SITEKEY = os.environ["TURNSTILE_SITEKEY"]
+
 # Clear any default handlers
 for handler in app.logger.handlers:
     app.logger.removeHandler(handler)
@@ -16,11 +21,6 @@ app.logger.addHandler(handler)
 
 # Set global log level
 app.logger.setLevel(logging.DEBUG)
-
-app = Flask(__name__)
-
-TURNSTILE_SECRET = os.environ["TURNSTILE_SECRET"]
-TURNSTILE_SITEKEY = os.environ["TURNSTILE_SITEKEY"]
 
 # This is used internally by Nginx as auth_request
 @app.route("/auth", methods=["GET", "HEAD"])
