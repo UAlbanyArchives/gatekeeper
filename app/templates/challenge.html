@@ -142,7 +142,7 @@
 
             <form method="POST" class="mt-4">
               <div class="form-group">
-                <div class="cf-turnstile mb-3" data-sitekey="{{ sitekey }}"></div>
+                <div class="cf-turnstile mb-3" data-sitekey="{{ sitekey }}" data-callback="turnstileCallback"></div>
                 <input type="hidden" name="next" value="{{ next_url }}">
                 <button type="submit" class="btn btn-primary btn-block">Verify</button>
               </div>

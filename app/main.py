@@ -1,4 +1,5 @@
 from flask import Flask, request, make_response, redirect, render_template
+from urllib.parse import quote, unquote
 import logging
 import requests
 import os
@@ -36,6 +37,21 @@ def auth():
 def challenge():
     app.logger.debug(f"Request cookies: {request.cookies}")
     next_url = request.args.get("next", "/")
+    # Defensive: re-encode if it was passed unencoded
+    # e.g. /catalog?utf8=✓&q=test  →  /catalog?utf8=%E2%9C%93&q=test
+    if "?" in next_url and "=" in next_url:
+        # To avoid double-encoding already percent-encoded URLs
+        parts = next_url.split("?", 1)
+        path = parts[0]
+        query = parts[1]
+        from urllib.parse import urlencode, parse_qsl
+        try:
+            parsed = dict(parse_qsl(query, keep_blank_values=True))
+            next_url = path + "?" + urlencode(parsed)
+        except:
+            # If malformed, fallback safely
+            next_url = "/"
+
     app.logger.debug(f"Challenge requested. Method: {request.method}, next_url: {next_url}")
 
     if request.method == "POST":

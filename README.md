@@ -12,6 +12,7 @@ services:
     ports:
       - "8000:5000"
     environment:
+      - LOG_LEVEL=DEBUG
       - TURNSTILE_SECRET=your_turnstile_secret
       - TURNSTILE_SITEKEY=your_turnstile_sitekey
 ```
