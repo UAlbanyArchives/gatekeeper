@@ -60,7 +60,7 @@ def challenge():
 
         if not token:
             app.logger.warning("Turnstile token missing from POST.")
-            return "Verification failed", 403
+            return render_template("failed.html", next_url=next_url), 403
 
         try:
             resp = requests.post(

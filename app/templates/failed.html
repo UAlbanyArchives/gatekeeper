@@ -14,7 +14,6 @@
         <link rel="stylesheet" href="https://archives.albany.edu/web/css/grenander/navbar.css" type="text/css"></link>
         <link rel="stylesheet" href="https://archives.albany.edu/web/css/grenander/footer.css" type="text/css"></link>
 
-        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
         <script type="text/javascript" src="https://archives.albany.edu/web/js/jquery-2.2.3.min.js"></script>
         <script type="text/javascript" src="https://archives.albany.edu/web/js/bootstrap/bootstrap.min.js"></script>
         <script type="text/javascript" src="https://archives.albany.edu/web/js/bgRandom.js"></script>
@@ -41,25 +40,7 @@
             @media (min-width: 992px) {
               #contentColumn {min-height: 600px;}
             }
-            #verify-btn {
-                color: #EBE6F0;
-                  background-color: #46166B;
-                  border-color: #46166B;
-            }
-            /* Hover style when disabled */
-            #verify-btn:disabled:hover {
-                color: #EBE6F0;
-                background-color: #46166B;
-                border-color: #46166B;
-                cursor: not-allowed;
-            }
 
-            /* Hover style when enabled */
-            #verify-btn:hover:not(:disabled) {
-                background-color: #eaaa00;
-                border-color: #eaaa00;
-                cursor: pointer;
-            }
         </style>
 
     </head>
@@ -156,21 +137,11 @@
     <div class="container main-container">
         <div id="contentColumn" class="col-md-12">
 
-            <h1>Are you Human?</h1>
+            <h1>Verification Failed 403</h1>
 
-            <form method="POST" class="mt-4">
-              <div class="form-group">
-                <div class="cf-turnstile mb-3" data-sitekey="{{ sitekey }}" data-callback="turnstileCallback"></div>
-                <input type="hidden" name="next" value="{{ next_url }}">
-                <button type="submit" class="btn btn-primary btn-block" id="verify-btn" disabled>Proceed</button>
-              </div>
-            </form>
+            <p>If you are human, please try again, and please <a href="https://albany.libwizard.com/f/contactus?i_have_a_questi=Special%20Collections%20%26%20Archives">Contact Us</a> if you continue to have issues.</p>
 
-            <script>
-              function turnstileCallback(token) {
-                document.getElementById("verify-btn").disabled = false;
-              }
-            </script>
+            <a href="/challenge?next={{ next_url }}" class="btn btn-primary btn-block">Retry</a>
 
 
         </div>
