@@ -75,7 +75,7 @@ def challenge():
             app.logger.debug(f"Cloudflare response: {result}")
         except Exception as e:
             app.logger.error(f"Error contacting Cloudflare: {e}")
-            return "Verification failed", 500
+            return "500 Verification failed", 500
 
         if result.get("success"):
             app.logger.info(f"Verification succeeded. Redirecting to: {next_url}")
@@ -91,7 +91,7 @@ def challenge():
             return response
         else:
             app.logger.warning(f"Verification failed: {result}")
-            return "Verification failed", 403
+            return "403 Verification failed", 403
 
     return render_template("challenge.html", sitekey=TURNSTILE_SITEKEY, next_url=next_url)
 
