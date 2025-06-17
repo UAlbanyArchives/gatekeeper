@@ -173,34 +173,31 @@
             </form>
 
             <script>
-              let tokenValid = false;
-
               function turnstileCallback(token) {
-                tokenValid = true;
                 document.getElementById('cf-turnstile-response').value = token;
                 document.getElementById('verify-btn').disabled = false;
               }
 
               function turnstileExpired() {
-                tokenValid = false;
                 document.getElementById('cf-turnstile-response').value = '';
                 document.getElementById('verify-btn').disabled = true;
               }
 
               function turnstileError() {
-                tokenValid = false;
                 document.getElementById('cf-turnstile-response').value = '';
                 document.getElementById('verify-btn').disabled = true;
               }
 
-              document.getElementById("verify-form").addEventListener("submit", function (e) {
-                if (!tokenValid) {
-                  e.preventDefault();
-                  alert("Please complete the verification before proceeding.");
-                }
+              document.addEventListener("DOMContentLoaded", function () {
+                document.getElementById("verify-form").addEventListener("submit", function (e) {
+                  const token = document.getElementById('cf-turnstile-response').value;
+                  if (!token) {
+                    e.preventDefault();
+                    alert("Please complete the verification before proceeding.");
+                  }
+                });
               });
             </script>
-
 
         </div>
     </div>

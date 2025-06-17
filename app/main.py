@@ -91,7 +91,7 @@ def challenge():
             return response
         else:
             app.logger.warning(f"Verification failed: {result}")
-            return "403 Verification failed", 403
+            return render_template("failed.html", next_url=next_url), 403
 
     return render_template("challenge.html", sitekey=TURNSTILE_SITEKEY, next_url=next_url)
 
