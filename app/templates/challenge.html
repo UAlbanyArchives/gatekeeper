@@ -158,18 +158,47 @@
 
             <h1>Are you Human?</h1>
 
-            <form method="POST" class="mt-4">
+            <form method="POST" class="mt-4" id="verify-form">
               <div class="form-group">
-                <div class="cf-turnstile mb-3" data-sitekey="{{ sitekey }}" data-callback="turnstileCallback"></div>
+                <div class="cf-turnstile mb-3"
+                     data-sitekey="{{ sitekey }}"
+                     data-callback="turnstileCallback"
+                     data-expired-callback="turnstileExpired"
+                     data-error-callback="turnstileError"></div>
+
+                <input type="hidden" name="cf-turnstile-response" id="cf-turnstile-response">
                 <input type="hidden" name="next" value="{{ next_url }}">
                 <button type="submit" class="btn btn-primary btn-block" id="verify-btn" disabled>Proceed</button>
               </div>
             </form>
 
             <script>
+              let tokenValid = false;
+
               function turnstileCallback(token) {
-                document.getElementById("verify-btn").disabled = false;
+                tokenValid = true;
+                document.getElementById('cf-turnstile-response').value = token;
+                document.getElementById('verify-btn').disabled = false;
               }
+
+              function turnstileExpired() {
+                tokenValid = false;
+                document.getElementById('cf-turnstile-response').value = '';
+                document.getElementById('verify-btn').disabled = true;
+              }
+
+              function turnstileError() {
+                tokenValid = false;
+                document.getElementById('cf-turnstile-response').value = '';
+                document.getElementById('verify-btn').disabled = true;
+              }
+
+              document.getElementById("verify-form").addEventListener("submit", function (e) {
+                if (!tokenValid) {
+                  e.preventDefault();
+                  alert("Please complete the verification before proceeding.");
+                }
+              });
             </script>
 
 
