@@ -173,6 +173,24 @@
             </form>
 
             <script>
+              document.addEventListener("DOMContentLoaded", function () {
+                const form = document.getElementById("verify-form");
+                const button = document.getElementById("verify-btn");
+                const tokenInput = document.getElementById("cf-turnstile-response");
+
+                form.addEventListener("submit", function (e) {
+                  const token = tokenInput.value;
+                  if (!token) {
+                    e.preventDefault();
+                    alert("Please complete the verification before proceeding.");
+                  } else {
+                    // Prevent double-submit
+                    button.disabled = true;
+                    button.innerText = "Verifying..."; // Optional: user feedback
+                  }
+                });
+              });
+
               function turnstileCallback(token) {
                 document.getElementById('cf-turnstile-response').value = token;
                 document.getElementById('verify-btn').disabled = false;
@@ -187,16 +205,6 @@
                 document.getElementById('cf-turnstile-response').value = '';
                 document.getElementById('verify-btn').disabled = true;
               }
-
-              document.addEventListener("DOMContentLoaded", function () {
-                document.getElementById("verify-form").addEventListener("submit", function (e) {
-                  const token = document.getElementById('cf-turnstile-response').value;
-                  if (!token) {
-                    e.preventDefault();
-                    alert("Please complete the verification before proceeding.");
-                  }
-                });
-              });
             </script>
 
         </div>
