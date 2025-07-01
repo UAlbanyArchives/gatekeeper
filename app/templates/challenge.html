@@ -60,6 +60,10 @@
                 border-color: #eaaa00;
                 cursor: pointer;
             }
+            #redirect-spinner .spinner-border {
+              width: 3rem;
+              height: 3rem;
+            }
         </style>
 
     </head>
@@ -174,10 +178,21 @@
               </div>
             </form>
 
+            <div id="redirect-spinner" class="text-center mt-4" style="display: none;">
+              <div class="spinner-border text-primary" role="status" aria-hidden="true"></div>
+              <p class="mt-3">Verification complete. Redirecting…</p>
+            </div>
+
             <script>
               function turnstileCallback(token) {
                 const form = document.getElementById('verify-form');
                 document.getElementById('cf-turnstile-response').value = token;
+
+                // Show spinner
+                document.getElementById('redirect-spinner').style.display = 'block';
+                form.style.display = 'none';
+
+                // Submit the form
                 form.submit();
               }
 
