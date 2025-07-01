@@ -158,6 +158,10 @@
 
             <h1>Are you Human?</h1>
 
+            <p class="mt-3">We've been experiencing heavy automated traffic that slows or takes pages offline. This verification helps us protect our site from automated abuse.</p>
+            <p class="mb-4">The verification should only take a moment and will automatically redirect you once it is complete.</p>
+
+
             <form method="POST" class="mt-4" id="verify-form">
               <div class="form-group">
                 <div class="cf-turnstile mb-3"
@@ -168,42 +172,22 @@
 
                 <input type="hidden" name="cf-turnstile-response" id="cf-turnstile-response">
                 <input type="hidden" name="next" value="{{ next_url }}">
-                <button type="submit" class="btn btn-primary btn-block" id="verify-btn" disabled>Proceed</button>
               </div>
             </form>
 
             <script>
-              document.addEventListener("DOMContentLoaded", function () {
-                const form = document.getElementById("verify-form");
-                const button = document.getElementById("verify-btn");
-                const tokenInput = document.getElementById("cf-turnstile-response");
-
-                form.addEventListener("submit", function (e) {
-                  const token = tokenInput.value;
-                  if (!token) {
-                    e.preventDefault();
-                    alert("Please complete the verification before proceeding.");
-                  } else {
-                    // Prevent double-submit
-                    button.disabled = true;
-                    button.innerText = "Verifying..."; // Optional: user feedback
-                  }
-                });
-              });
-
               function turnstileCallback(token) {
+                const form = document.getElementById('verify-form');
                 document.getElementById('cf-turnstile-response').value = token;
-                document.getElementById('verify-btn').disabled = false;
+                form.submit();
               }
 
               function turnstileExpired() {
                 document.getElementById('cf-turnstile-response').value = '';
-                document.getElementById('verify-btn').disabled = true;
               }
 
               function turnstileError() {
                 document.getElementById('cf-turnstile-response').value = '';
-                document.getElementById('verify-btn').disabled = true;
               }
             </script>
 
