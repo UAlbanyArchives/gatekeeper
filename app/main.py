@@ -78,7 +78,7 @@ def challenge():
             return "500 Verification failed", 500
 
         if result.get("success"):
-            app.logger.info(f"Verification succeeded. Redirecting to: {next_url}")
+            app.logger.debug(f"Verification succeeded. Redirecting to: {next_url}")
             response = make_response(redirect(next_url))
             response.set_cookie(
                 "turnstile_verified",
@@ -86,8 +86,8 @@ def challenge():
                 max_age=8 * 3600,  # Set for 8 hours as 3600 is an hour
                 secure=True,
                 httponly=True,
-                samesite="None",
-                domain="archives.albany.edu"
+                samesite="Lax",
+                path="/"
             )
             return response
         else:
