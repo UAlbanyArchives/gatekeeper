@@ -54,7 +54,7 @@ def challenge():
 
     app.logger.debug(f"Challenge requested. Method: {request.method}, next_url: {next_url}")
 
-    if request.method == "POST" or request.method == "GET":
+    if request.method == "POST":
         token = request.form.get("cf-turnstile-response")
         app.logger.debug(f"Received POST with Turnstile token: {token}")
 
