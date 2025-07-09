@@ -46,7 +46,7 @@ def skip_challenge_for_static_and_assets():
         return redirect(url_for("challenge", next=request.full_path))
 
 # Routes
-@app.route("/auth", methods=["GET", "HEAD"])
+@app.route("/challenge/auth", methods=["GET", "HEAD"])
 def auth():
     cookie = request.cookies.get("turnstile_verified")
     app.logger.debug(f"turnstile_verified cookie: {cookie}")
