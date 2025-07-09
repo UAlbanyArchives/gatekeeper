@@ -1,10 +1,10 @@
-from flask import Flask, request, make_response, redirect, render_template, url_for
+from flask import Flask, request, make_response, redirect, render_template, url_for, send_from_directory
 from urllib.parse import unquote, urlencode
 import logging
 import requests
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static")
 
 TURNSTILE_SECRET = os.environ["TURNSTILE_SECRET"]
 TURNSTILE_SITEKEY = os.environ["TURNSTILE_SITEKEY"]

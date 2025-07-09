@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+body {
+	font-family: system, -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
+}
+
+body {
+    background: #e2e1e0;
+}
+
+a {
+	color: #642a90;
+}
+
+a:hover {
+	color: #006c68;
+}
+
+.btn-info {
+	background-color: #006c68;
+}
+
+.visually-hidden {
+	display: none;
+}
+
+.btn-primary {
+	color: #EBE6F0;
+	background-color: #46166B;
+	border-color: #46166B;
+}
+
+.btn-primary:not(:disabled):not(.disabled):active, .btn-primary.active:not(:disabled):not(.disabled), .show > .btn-primary.dropdown-toggle {
+	/*color: #46166B;*/
+	background-color: #eaaa00;
+	border-color: #eaaa00;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary.active {
+	/*color: #46166B;*/
+	background-color: #eaaa00;
+	border-color: #eaaa00;
+}
+
+.btn-primary:focus {
+	box-shadow: 0 0 0 .2rem #9e68c7;
+}
+
+.btn-warning {
+	color: #fff;
+	background-color: #9e68c7 !important;
+	border-color: #9e68c7 !important;
+	text-shadow: none;
+}
+
+a.btn-warning:hover, a.btn-warning:focus {
+	background-color: #eaaa00 !important;
+	border-color: #eaaa00 !important;
+}
+
+/* pagination */
+
+.pagination .btn-outline-info {
+	color: #46166B;
+	border-color: #46166B;
+}
+
+/*.pagination .page-item a {
+	color: #46166B; 
+}
+
+.pagination .page-item.active .page-link {
+	background-color: #9e68c7;
+	border-color: #9e68c7;
+}*/
+
+
+#searchLabel {
+	display: none;
+}

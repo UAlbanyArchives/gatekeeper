@@ -1,0 +1,338 @@
+body {
+  background-image: none;
+  background-color: #fff
+}
+
+@media only screen and (min-width: 991px) {
+  body {
+    background-image: url("https://library.albany.edu/speccoll/findaids/eresources/static/img/bg1.jpg");
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+    background-attachment: fixed;
+    background-position: center top;
+  }
+}
+
+@media only screen and (min-width: 1500px) {
+  .main-container .row .side-menu {
+    flex: 0 0 16.666667%;
+    max-width: 16.666667%;
+    margin-left: 8.333333%;
+  }
+  .main-container .row #contentColumn {
+    margin-left: 8.333333%;
+    flex: 0 0 58.333333%;
+    max-width: 58.333333%;
+  }
+}
+
+.row {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+
+/*.pagination a.active {
+  color: #fff !important;
+}
+.pagination a {
+  color: #46166B !important;
+}*/
+
+/*@media only screen and (max-width: 991px) {
+  body:before {
+      content: "";
+      display: block;
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -10;
+      background: url("https://library.albany.edu/speccoll/findaids/eresources/static/img/bgDowntown.jpg") no-repeat center center;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+  }
+}*/
+
+@media only screen and (min-width: 991px) {
+  body {
+    background-attachment: fixed;
+  }
+}
+
+@media only screen and (min-width: 1100px) {
+  body {
+    background-size: 100% auto;
+  }
+}
+
+body > .container .panel {
+  /*box-shadow: 0 0 20px #FFFFFF;*/
+} 
+
+#page-content-wrapper {
+  padding: 0px;
+}
+
+.navbar {
+  margin-bottom: 0px;
+}
+
+#contentColumn > .title {
+  margin-bottom: 3rem;
+}
+
+#mainContent .main-container #contentColumn {
+  background-color: #FFFFFF;
+  box-shadow: 0 0 10px #FFFFFF;
+  padding-top: 40px;
+  z-index: 0;
+}
+
+@media only screen and (min-width: 576px) {
+  #mainContent .main-container #contentColumn {
+    padding: 40px;
+  }
+}
+
+#mainContent .row .whitebg #contentColumn {
+  background-color: #FFFFFF;
+  box-shadow: 0 0 10px #FFFFFF;
+  padding: 40px;
+}
+
+@media only screen and (max-width: 767px) {
+  #mainContent .row .container #contentColumn {
+      padding: 0px;
+      padding-top: 20px;
+  }
+}
+
+#mainContent p {
+  /*font-size: 13pt;*/
+}
+
+.sequence {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+  margin: 0px;
+  margin-top: 20px;
+}
+
+.well h4 {
+  margin: 10px auto;
+  text-align: center;
+  min-height: 20px;
+  padding: 19px;
+  margin-bottom: 20px;
+  background-color: #f5f5f5;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+}
+
+.well {
+  width: 300px;
+  padding: 19px;
+  margin-bottom: 20px;
+  background-color: #f5f5f5;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+}
+
+/*Big Search Box*/
+  .searchBig a {
+    color: #EBE6F0;
+  }
+  .searchBig .sequence {
+    padding-bottom: 10px;
+    padding-top: 10px;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+  }
+  .searchBig .sequence * {
+    margin: 5px;
+  }
+  .searchBig {
+  padding: 20px 20px;
+  height: auto;
+  background-color: #46166B;
+  }
+  .searchBig .btn-primary {
+    background-color: #EBE6F0;
+    color: #403a60;
+    border-color: #403a60;
+    border-radius: 0px;
+  }
+  .searchBig .input-group {
+    margin: 0 auto;
+    
+    width: 100%;
+    display: block !important;
+    font-size: 25pt;
+  }
+  .searchBox .input-group input {
+    height: 70px;
+    margin: 0 auto;
+    vertical-align: middle;
+    font-size: 30pt;
+    width: 85% !important;
+    max-width: 100% !important;
+  }
+  @media (max-width: 600px) {
+    .searchBig .input-group-btn {
+      display: block;
+      margin: 0px auto;
+      width: 70px;
+    }
+    .searchBig .input-group-btn button {
+      margin-top: 10px;
+    }
+    .searchBox .input-group input {
+      width: 100% !important;
+      border-top-right-radius: 5px !important;
+      border-bottom-right-radius: 5px !important;
+    }
+  }
+
+  .searchBig .btn-primary:hover {
+    color: #EBE6F0;
+  }
+  .searchBox .input-group .btn {
+    height: 70px;
+    vertical-align: middle;
+    font-size: 20pt;
+    float: right;
+    width: 100%;
+  }
+  
+  .nav-tabs {
+  margin-bottom: 20px;
+}
+
+.nav-tabs li.active a {
+  background-color: #EBE6F0;
+}
+
+.nav-tabs li.active a:hover {
+  background-color: #ffffff;
+}
+
+.nav-tabs li a:hover {
+  background-color: #eaaa00; 
+  color: #ffffff;
+  border-color: #46166B;
+  border-bottom: 1px solid #EBE6F0;
+}
+.nav-tabs li a {
+  color: #EBE6F0;
+}
+
+
+
+.searchBig .sequence .glyphicon {
+  font-size: 7pt;
+  top: 0px;
+}
+
+.form-required {
+  font-size: 15pt;
+} 
+
+
+iframe.blogVideo {
+  display: block;
+  margin: 20 auto;
+}
+
+span.author {
+  font-weight: bold;
+}
+
+.blog img.blog_image {
+  width: 100%;
+}
+
+.side-menu {
+  margin-top:  40px;
+  display: block;
+}
+
+.side-menu .list-group {
+  position: sticky;
+  top: 40px;
+}
+
+
+.main-container .row .list-group .list-group-item {
+  color: #46166B;
+}
+
+.main-container .row .list-group .list-group-item:hover {
+  color: #EBE6F0 !important;
+  background: #006c68;
+}
+
+.main-container .row .list-group .list-group-item-primary {
+  color: #fff;
+  background-color: #46166B;
+  border-color: #46166B;
+  border: 0;
+  border-bottom: 4px solid #eaaa00 !important;
+  font-size: 1.2rem;
+}
+
+
+.donations > ul > li {
+  margin-top: 1rem;
+}
+
+
+.blogVideo {
+  margin: 20px auto;
+}
+
+@media only screen and (max-width: 1400px) {
+    .blogVideo {
+      width: 100%;
+    }
+}
+
+table.hoursTable > tbody > tr:first-child > td {
+  border-top:  none;
+}
+
+
+.referenceAssistance p {
+  margin-bottom: 0.3rem;
+}
+
+.arclight_diagram {
+  max-width: 60%;
+  display: block;
+  margin: 25px auto;
+}
+
+.iframe-iiif {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  padding-top: 75%; 
+}
+
+.iframe-iiif iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+}

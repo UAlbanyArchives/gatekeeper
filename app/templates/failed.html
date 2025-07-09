@@ -5,20 +5,23 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8; charset=UTF-8" />
         <title>Verification Required | M.E. Grenander Department of Special Collections & Archives</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="shortcut icon" href="https://archives.albany.edu/web/icons/ua/mainLogo.ico"></link>
+        <!-- Favicon -->
+        <link rel="shortcut icon" href="{{ url_for('static', filename='icons/ua/mainLogo.ico') }}">
 
-        <link rel="stylesheet" href="https://archives.albany.edu/web/css/bootstrap/bootstrap.min.css"></link>
-        <link rel="stylesheet" href="https://archives.albany.edu/web/css/font-awesome.min.css"></link>
+        <!-- Stylesheets -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
 
-        <link rel="stylesheet" href="https://archives.albany.edu/web/css/grenander/main.css" type="text/css"></link>
-        <link rel="stylesheet" href="https://archives.albany.edu/web/css/grenander/navbar.css" type="text/css"></link>
-        <link rel="stylesheet" href="https://archives.albany.edu/web/css/grenander/footer.css" type="text/css"></link>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/grenander/main.css') }}" type="text/css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/grenander/navbar.css') }}" type="text/css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/grenander/footer.css') }}" type="text/css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/grenander/oneColumn.css') }}" type="text/css">
 
-        <script type="text/javascript" src="https://archives.albany.edu/web/js/jquery-2.2.3.min.js"></script>
-        <script type="text/javascript" src="https://archives.albany.edu/web/js/bootstrap/bootstrap.min.js"></script>
-        <script type="text/javascript" src="https://archives.albany.edu/web/js/bgRandom.js"></script>
-        <script type="text/javascript" src="https://archives.albany.edu/web/js/referenceFormTitle.js"></script>
-        <!--<script type="text/javascript" src="https://archives.albany.edu/web/js/dev-links.js"></script>-->
+        <!-- JavaScript -->
+        <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.2.3.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap/bootstrap.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/bgRandom.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/referenceFormTitle.js') }}"></script>
 
         <!-- Matomo -->
         <script>
