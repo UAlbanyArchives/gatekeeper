@@ -1,10 +1,14 @@
-from flask import Flask, request, make_response, redirect, render_template, url_for
+from flask import Flask, request, abort, make_response, redirect, render_template, url_for, send_from_directory
 from urllib.parse import unquote, urlencode
 import logging
 import requests
 import os
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_url_path="/challenge/static",
+    static_folder="static"
+)
 
 TURNSTILE_SECRET = os.environ["TURNSTILE_SECRET"]
 TURNSTILE_SITEKEY = os.environ["TURNSTILE_SITEKEY"]
@@ -24,8 +28,25 @@ handler.setFormatter(formatter)
 app.logger.addHandler(handler)
 app.logger.setLevel(LOG_LEVEL)
 
+@app.before_request
+def skip_challenge_for_static_and_assets():
+    # Skip challenge for static files (css, js, images, icons)
+    if request.path.startswith("/challenge/static/") or \
+       request.path.endswith((".css", ".js", ".ico", ".png", ".jpg", ".jpeg", ".gif", ".svg")):
+        return  # Skip challenge, serve normally
+
+    # Skip challenge if already on challenge page to avoid redirect loop
+    if request.path == "/challenge":
+        return
+    
+    # Now do your Turnstile challenge logic for all other paths
+    cookie = request.cookies.get("turnstile_verified")
+    if cookie != "1":
+        # Redirect to challenge page or return challenge
+        return redirect(url_for("challenge", next=request.full_path))
+
 # Routes
-@app.route("/auth", methods=["GET", "HEAD"])
+@app.route("/challenge/auth", methods=["GET", "HEAD"])
 def auth():
     cookie = request.cookies.get("turnstile_verified")
     app.logger.debug(f"turnstile_verified cookie: {cookie}")
@@ -93,6 +114,8 @@ def challenge():
         else:
             app.logger.warning(f"Verification failed: {result}")
             return render_template("failed.html", next_url=next_url), 403
+    else:
+        app.logger.debug("Received {request.method} request.")
 
     return render_template("challenge.html", sitekey=TURNSTILE_SITEKEY, next_url=next_url)
 

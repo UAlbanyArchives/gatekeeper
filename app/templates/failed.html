@@ -5,20 +5,22 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8; charset=UTF-8" />
         <title>Verification Required | M.E. Grenander Department of Special Collections & Archives</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="shortcut icon" href="https://archives.albany.edu/icons/ua/mainLogo.ico"></link>
+        <!-- Favicon -->
+        <link rel="shortcut icon" href="{{ url_for('static', filename='mainLogo.ico') }}">
 
-        <link rel="stylesheet" href="https://archives.albany.edu/css/bootstrap/bootstrap.min.css"></link>
-        <link rel="stylesheet" href="https://archives.albany.edu/css/font-awesome.min.css"></link>
+        <!-- Stylesheets -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='font-awesome.min.css') }}">
 
-        <link rel="stylesheet" href="https://archives.albany.edu/css/grenander/main.css" type="text/css"></link>
-        <link rel="stylesheet" href="https://archives.albany.edu/css/grenander/navbar.css" type="text/css"></link>
-        <link rel="stylesheet" href="https://archives.albany.edu/css/grenander/footer.css" type="text/css"></link>
+        <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}" type="text/css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='navbar.css') }}" type="text/css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='footer.css') }}" type="text/css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='oneColumn.css') }}" type="text/css">
 
-        <script type="text/javascript" src="https://archives.albany.edu/js/jquery-2.2.3.min.js"></script>
-        <script type="text/javascript" src="https://archives.albany.edu/js/bootstrap/bootstrap.min.js"></script>
-        <script type="text/javascript" src="https://archives.albany.edu/js/bgRandom.js"></script>
-        <script type="text/javascript" src="https://archives.albany.edu/js/referenceFormTitle.js"></script>
-        <!--<script type="text/javascript" src="https://archives.albany.edu/js/dev-links.js"></script>-->
+        <!-- JavaScript -->
+        <script type="text/javascript" src="{{ url_for('static', filename='jquery-2.2.3.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/bootstrap.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='referenceFormTitle.js') }}"></script>
 
         <!-- Matomo -->
         <script>
@@ -68,7 +70,7 @@
             <a class="dropdown-item" href="https://archives.albany.edu/books?f[collecting_area_ssim][]=Mathes+Childrens+Literature">Mathes Childrens Literature</a>
             <a class="dropdown-item" href="https://archives.albany.edu/description/repositories/mss">Business and Literary Manuscripts</a>
             <a class="dropdown-item" href="https://archives.albany.edu/books">Rare Books</a>
-            <a class="dropdown-item" href="https://archives.albany.edu/webarchives">Web Archives</a>
+            <a class="dropdown-item" href="https://archives.albany.eduarchives">Web Archives</a>
             <div class="dropdown-divider"></div> 
             <a class="dropdown-item" href="https://archives.albany.edu/description/repositories/all">A-Z Complete List of Collections</a>
             <a class="dropdown-item" href="https://archives.albany.edu/description/repositories/sub">Subject Guides to Collections</a>
@@ -84,12 +86,12 @@
             <a class="dropdown-item" href="https://archives.albany.edu/history">UAlbany History</a>
             <a class="dropdown-item" href="https://archives.albany.edu/espy">Espy Project Execution Records</a>
             <a class="dropdown-item" href="https://archives.albany.edu/selections/uaphotos">University Photograph Collections</a>
-            <a class="dropdown-item" href="https://archives.albany.edu/selections/asp">Albany Student Press</a>
-            <a class="dropdown-item" href="https://archives.albany.edu/selections/senate">University Senate Legislation</a>
-            <a class="dropdown-item" href="https://archives.albany.edu/selections/yearbooks">Yearbook Collection</a>
+            <a class="dropdown-item" href="https://archives.albany.edu/description/catalog/ua809">Albany Student Press</a>
+            <a class="dropdown-item" href="https://archives.albany.edu/description/catalog/ua200aspace_d2c8b71621925e217ad002c36f27822a">University Senate Legislation</a>
+            <a class="dropdown-item" href="https://archives.albany.edu/description/catalog/ua807">Yearbook Collection</a>
             <a class="dropdown-item" href="https://archives.albany.edu/selections/milne">The Milne School</a>
-            <a class="dropdown-item" href="https://archives.albany.edu/selections/wamc">WAMC Northeast Public Radio</a>
-            <a class="dropdown-item" href="https://archives.albany.edu/selections/csea">CSEA Publications</a>
+            <a class="dropdown-item" href="https://archives.albany.edu/description/catalog/apap138">WAMC Northeast Public Radio</a>
+            <a class="dropdown-item" href="https://archives.albany.edu/description/catalog/apap015aspace_90e13b5a023aefdb6ab5d1de295703fc">CSEA Publications</a>
             <a class="dropdown-item" href="https://archives.albany.edu/exhibits">Online Exhibits</a>
           </div>
         </li>
@@ -130,8 +132,6 @@
  -->
 
         <div id="mainContent">
-            <link rel="stylesheet" href="https://archives.albany.edu/css/oneColumn.css" type="text/css"></link>
-
 
 <div class="row">
     <div class="container main-container">

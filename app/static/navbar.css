@@ -1,0 +1,137 @@
+
+.navbar-dark {
+    background-color: #46166B !important;
+    z-index: 10;
+}
+
+.navbar-nav li .dropdown-toggle {
+	border-radius: 5px;
+	width: 100% !important;
+}
+
+.navbar-collapse > .navbar-nav > li > a {
+	border-radius: 5px;
+}
+
+
+.navbar-dark .navbar-nav .nav-link {
+	color: #EBE6F0;
+	text-decoration: none;
+	font: 13pt "Roboto", Helvetica, Arial, sans-serif;
+	padding-top: 15px;
+	padding-bottom: 15px;
+	width: 100% !important;
+	display: block;
+	padding-left: 0.5rem;
+}
+
+.navbar-dark .dropdown-menu a {
+	color: #403a60;
+	text-decoration: none;
+	font: 11pt "Roboto", Helvetica, Arial, sans-serif;
+	/*padding-top: 10px;*/
+	/*padding-bottom: 10px;*/
+	vertical-align: middle;
+}
+
+.navbar-dark .dropdown-menu a:active {
+	background-color: #46166B;
+	color: #EBE6F0;
+}
+
+.navbar-dark .dropdown-menu .dropdown-divider {
+	border-color: #46166B;
+	/*margin-top: 3px;*/
+	/*margin-bottom: 3px;*/
+}
+
+.navbar-dark .navbar-nav > .show > a, .navbar-dark .navbar-nav > .show > a:focus, .navbar-dark .navbar-nav > .show > a:hover {
+	background-color: #EBE6F0;
+	color: #403a60;
+}
+
+.navbar-dark li a {
+	padding: 10px 10px;
+}
+
+.nav > .dropdown.show .caret {
+    border-top: none;
+    border-bottom: 4px solid #eaaa00;
+}
+
+.dropdown-menu li a {
+	padding-top: 8px;
+	padding-bottom: 2px;
+	width: 100% !important;
+}
+
+.navbar-dark .navbar-nav li a:hover{
+	color: #EBE6F0;
+	background-color: #46166B;
+}
+
+.navbar-dark .container {
+	justify-content: center;
+}
+
+.dropdown-menu {
+	background-color: #EBE6F0;
+	top: 95%;
+	left: auto;
+}
+
+.navbar-dark .navbar-nav .show > .nav-link, .navbar-dark .navbar-nav .active > .nav-link, .navbar-dark .navbar-nav .nav-link.show, .navbar-dark .navbar-nav .nav-link.active {
+	color: #46166B;
+}
+
+.alert-navbar {
+	background-color: #eeb211;
+}
+
+/* logo */
+
+.navbar-logo {
+	background-image: url('grenanderLogo.png');
+	background-color: transparent;
+	background-position: center left;
+	background-repeat: no-repeat;
+	display: inline-block;
+	margin-right: 20px;
+	margin-top: -0.4rem;
+	margin-bottom: -0.4rem;
+	overflow: hidden;
+	padding-left: 0;
+	padding-right: 0;
+	text-indent: 100%;
+	white-space: nowrap;
+	background-size: contain;
+	background-position: center;
+	flex: 0 0 250px;
+	
+}
+
+@media (min-width: 576px) {
+	.navbar-logo {
+		flex: 0 0 450px;
+		height: 90px;
+	}
+}
+
+@media (min-width: 768px) {
+	.navbar-logo {
+		flex: 0 0 320px;
+		background-color: transparent;
+		background-position: center left;
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: contain;
+		height: 70px;
+	}
+}
+
+@media (min-width: 992px) {
+	.navbar-logo {
+		flex: 0 0 500px;
+		height: 100px;
+	}
+}
