@@ -4,7 +4,11 @@ import logging
 import requests
 import os
 
-app = Flask(__name__, static_folder="static")
+app = Flask(
+    __name__,
+    static_url_path="/challenge/static",
+    static_folder="static"
+)
 
 TURNSTILE_SECRET = os.environ["TURNSTILE_SECRET"]
 TURNSTILE_SITEKEY = os.environ["TURNSTILE_SITEKEY"]
