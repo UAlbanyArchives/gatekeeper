@@ -102,7 +102,6 @@ def challenge():
 
         if result.get("success"):
             app.logger.debug(f"Verification succeeded. Redirecting to: {next_url}")
-            response.set_cookie("turnstile_failures", "", max_age=0, path="/")
             response = make_response(redirect(next_url))
             response.set_cookie(
                 "turnstile_verified",
@@ -114,6 +113,8 @@ def challenge():
                 domain=".albany.edu",
                 path="/"
             )
+            # Clear failure count
+            response.set_cookie("turnstile_failures", "", max_age=0, path="/")
             return response
         else:
             app.logger.warning(f"Full response: {result}, IP: {request.remote_addr}")
