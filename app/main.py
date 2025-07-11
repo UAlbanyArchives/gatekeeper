@@ -110,7 +110,7 @@ def challenge():
                 secure=True,
                 httponly=True,
                 samesite="Lax",
-                domain=".albany.edu",
+                domain=".archives.albany.edu",
                 path="/"
             )
             # Clear failure count
