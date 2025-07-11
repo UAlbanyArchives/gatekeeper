@@ -33,19 +33,30 @@ def skip_challenge_for_static_and_assets():
     # Skip challenge for static files (css, js, images, icons)
     if request.path.startswith("/challenge/static/") or \
        request.path.endswith((".css", ".js", ".ico", ".png", ".jpg", ".jpeg", ".gif", ".svg")):
-        return  # Skip challenge, serve normally
-
-    # Skip challenge if already on challenge page to avoid redirect loop
-    if request.path == "/challenge":
         return
-    
-    # Now do the Turnstile challenge logic for all other paths
-    if request.cookies.get("turnstile_verified") != "1":
+
+    # Skip if on challenge or auth page
+    if request.path.startswith("/challenge"):
+        return
+
+    # Skip if already verified
+    if request.cookies.get("turnstile_verified") == "1":
+        return
+
+    # Check failure count
+    try:
         failures = int(request.cookies.get("turnstile_failures", 0))
-        if failures >= 3:
-            app.logger.warning("User exceeded max Turnstile attempts")
-            return render_template("failed.html", reason="Too many failed verification attempts."), 403
-        return redirect(url_for("challenge", next=request.full_path))
+    except (TypeError, ValueError):
+        failures = 0
+
+    if failures >= 3:
+        app.logger.warning("User exceeded max Turnstile attempts")
+        return render_template("failed.html", reason="Too many failed verification attempts."), 403
+
+    # Redirect to challenge page with next param (fallback to "/" if not safe)
+    next_url = request.full_path or request.path or "/"
+    if next_url.startswith("/challenge"):
+        next_url = "/"
 
 # Routes
 @app.route("/challenge/auth", methods=["GET", "HEAD"])
@@ -110,7 +121,7 @@ def challenge():
                 secure=True,
                 httponly=True,
                 samesite="Lax",
-                domain=".archives.albany.edu",
+                domain=".albany.edu",
                 path="/"
             )
             # Clear failure count
