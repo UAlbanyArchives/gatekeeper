@@ -113,7 +113,7 @@ def challenge():
             app.logger.debug(f"Verification succeeded. Redirecting to: {next_url}")
             if not next_url or next_url.startswith("/challenge"):
                 next_url = "/"
-            response = make_response(redirect(unquote(encoded_next)))
+            response = make_response(redirect(next_url))
             response.set_cookie(
                 "turnstile_verified",
                 "1",
