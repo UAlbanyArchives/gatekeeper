@@ -49,13 +49,13 @@ def skip_challenge_for_static_and_assets():
         app.logger.warning("User exceeded max Turnstile attempts")
         return render_template("failed.html", reason="Too many failed verification attempts."), 403
 
-    # Fallback-safe next URL
+    # Prevent redirect loops by ensuring `next` never points to /challenge
     next_url = request.full_path or request.path or "/"
     if not next_url or next_url.startswith("/challenge"):
         next_url = "/"
 
+    app.logger.debug(f"Redirecting to challenge with next={next_url}")
     return redirect(url_for("challenge", next=next_url))
-
 # Routes
 @app.route("/challenge/auth", methods=["GET", "HEAD"])
 def auth():
@@ -113,6 +113,8 @@ def challenge():
 
         if result.get("success"):
             app.logger.debug(f"Verification succeeded. Redirecting to: {next_url}")
+            if not next_url or next_url.startswith("/challenge"):
+                next_url = "/"
             response = make_response(redirect(next_url))
             response.set_cookie(
                 "turnstile_verified",
@@ -145,7 +147,7 @@ def challenge():
             )
             return response
     else:
-        app.logger.debug("Received {request.method} request.")
+        app.logger.debug(f"Received {request.method} request.")
 
     return render_template("challenge.html", sitekey=TURNSTILE_SITEKEY, next_url=next_url)
 
