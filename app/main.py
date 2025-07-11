@@ -127,7 +127,7 @@ def challenge():
                 max_age=8 * 3600,  # Set for 8 hours as 3600 is an hour
                 secure=True,
                 httponly=True,
-                samesite="Lax",
+                samesite="None",
                 domain=".albany.edu",
                 path="/"
             )
