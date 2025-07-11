@@ -1,5 +1,5 @@
 from flask import Flask, request, abort, make_response, redirect, render_template, url_for, send_from_directory
-from urllib.parse import unquote, urlencode
+from urllib.parse import unquote, urlencode, quote
 import logging
 import requests
 import os
@@ -70,10 +70,13 @@ def challenge():
     app.logger.debug(f"Request cookies: {request.cookies}")
     
     next_url = request.args.get("next")
+    if next_url:
+        next_url = unquote(next_url)
+    else:
+        return render_template("failed.html", reason="Missing redirect target."), 403
 
-    # If no next_url or next_url points to /challenge, show failed page immediately:
-    if not next_url or next_url.startswith("/challenge"):
-        app.logger.warning("Invalid or missing 'next' parameter, showing failure page")
+    # Prevent redirect loop:
+    if next_url.startswith("/challenge"):
         return render_template("failed.html", reason="Invalid redirect target."), 403
 
     app.logger.debug(f"Challenge requested. Method: {request.method}, next_url: {next_url}")
