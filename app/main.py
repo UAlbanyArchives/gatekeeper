@@ -53,7 +53,9 @@ def skip_challenge_for_static_and_assets():
     if not next_url or next_url.startswith("/challenge"):
         next_url = "/"
 
-    encoded_next = quote(target_url)
+    # URL-encode the full next_url before passing it as a param
+    encoded_next = quote(next_url, safe='')
+
     app.logger.debug(f"Redirecting to challenge with next={unquote(encoded_next)}")
     return redirect(url_for("challenge", next=encoded_next))
 
@@ -70,16 +72,19 @@ def auth():
 def challenge():
     app.logger.debug(f"Request cookies: {request.cookies}")
     
-    encoded_next = request.args.get("next")
-    if not encoded_next:
+    next_url = request.args.get("next")
+    if not next_url:
         return render_template("failed.html", reason="Missing redirect target."), 403
+    old_next_url = next_url
+    # Decode the next_url to get the full URL with query params
+    next_url = unquote(next_url)
 
-    next_url = unquote(encoded_next)  # decode back to original URL
-
+    # Prevent redirect loop:
     if next_url.startswith("/challenge"):
         return render_template("failed.html", reason="Invalid redirect target."), 403
 
     app.logger.debug(f"Challenge requested. Method: {request.method}, next_url: {next_url}")
+    app.logger.debug(f"Challenge requested. Method: {request.method}, next_url: {old_next_url}")
 
     if request.method == "POST":
         token = request.form.get("cf-turnstile-response")
