@@ -69,22 +69,9 @@ def auth():
 def challenge():
     app.logger.debug(f"Request cookies: {request.cookies}")
     
-    # Rebuild the full original URL (path + query params)
-    full_path = request.args.get("next") or "/"
-    if full_path.startswith("/challenge"):
-        full_path = "/"
-    next_args = request.args.to_dict(flat=False)
-
-    # If 'next' was passed in the query, use it
-    if 'next' in next_args:
-        next_val = next_args.pop('next')[0]
-        next_url = next_val
-    else:
-        next_url = request.path
-
-    if next_args:
-        # Re-append query string if any
-        next_url += '?' + urlencode(next_args, doseq=True)
+    next_url = request.args.get("next", "/")
+    if next_url.startswith("/challenge"):
+        next_url = "/"
 
     app.logger.debug(f"Challenge requested. Method: {request.method}, next_url: {next_url}")
 
