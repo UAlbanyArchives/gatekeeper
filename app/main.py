@@ -69,9 +69,12 @@ def auth():
 def challenge():
     app.logger.debug(f"Request cookies: {request.cookies}")
     
-    next_url = request.args.get("next", "/")
-    if next_url.startswith("/challenge"):
-        next_url = "/"
+    next_url = request.args.get("next")
+
+    # If no next_url or next_url points to /challenge, show failed page immediately:
+    if not next_url or next_url.startswith("/challenge"):
+        app.logger.warning("Invalid or missing 'next' parameter, showing failure page")
+        return render_template("failed.html", reason="Invalid redirect target."), 403
 
     app.logger.debug(f"Challenge requested. Method: {request.method}, next_url: {next_url}")
 
