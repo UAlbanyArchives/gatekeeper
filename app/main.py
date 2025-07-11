@@ -57,7 +57,7 @@ def skip_challenge_for_static_and_assets():
 
     return redirect(f"/challenge?next={encoded_next}")
 
-    
+
 # Routes
 @app.route("/challenge/auth", methods=["GET", "HEAD"])
 def auth():
@@ -71,19 +71,27 @@ def auth():
 def challenge():
     app.logger.debug(f"Request cookies: {request.cookies}")
     
-    next_url = request.args.get("next")
-    if not next_url:
-        return render_template("failed.html", reason="Missing redirect target."), 403
-    old_next_url = next_url
-    # Decode the next_url to get the full URL with query params
+    # Get all query params as a dict with lists (for repeated keys)
+    query_params = request.args.to_dict(flat=False)
+
+    # Extract 'next' value (should be a list), or default
+    next_parts = query_params.pop('next', ["/"])
+    next_url = next_parts[0]  # first 'next' value
+
+    # Rebuild the query string for the rest of the parameters (which belong to `next`)
+    if query_params:
+        # urlencode with doseq=True handles multiple values per key correctly
+        qs = urlencode(query_params, doseq=True)
+        next_url = f"{next_url}?{qs}"
+
+    # Now unquote to handle any encoded characters in next_url
     next_url = unquote(next_url)
 
-    # Prevent redirect loop:
+    # Prevent redirect loops
     if next_url.startswith("/challenge"):
         return render_template("failed.html", reason="Invalid redirect target."), 403
 
-    app.logger.debug(f"Challenge requested. Method: {request.method}, next_url: {next_url}")
-    app.logger.debug(f"Challenge requested. Method: {request.method}, next_url: {old_next_url}")
+    app.logger.debug(f"Challenge requested. Method: {request.method}, reconstructed next_url: {next_url}")
 
     if request.method == "POST":
         token = request.form.get("cf-turnstile-response")
