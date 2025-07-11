@@ -54,7 +54,7 @@ def skip_challenge_for_static_and_assets():
         next_url = "/"
 
     # URL encode next_url before passing to url_for
-    encoded_next = quote(next_url)
+    encoded_next = quote(next_url, safe='')
 
     app.logger.debug(f"Redirecting to challenge with next={next_url} (encoded: {encoded_next})")
     return redirect(url_for("challenge", next=encoded_next))
