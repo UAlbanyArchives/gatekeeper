@@ -30,20 +30,16 @@ app.logger.setLevel(LOG_LEVEL)
 
 @app.before_request
 def skip_challenge_for_static_and_assets():
-    # Skip challenge for static files (css, js, images, icons)
     if request.path.startswith("/challenge/static/") or \
        request.path.endswith((".css", ".js", ".ico", ".png", ".jpg", ".jpeg", ".gif", ".svg")):
         return
 
-    # Skip if on challenge or auth page
     if request.path.startswith("/challenge"):
         return
 
-    # Skip if already verified
     if request.cookies.get("turnstile_verified") == "1":
         return
 
-    # Check failure count
     try:
         failures = int(request.cookies.get("turnstile_failures", 0))
     except (TypeError, ValueError):
@@ -53,10 +49,12 @@ def skip_challenge_for_static_and_assets():
         app.logger.warning("User exceeded max Turnstile attempts")
         return render_template("failed.html", reason="Too many failed verification attempts."), 403
 
-    # Redirect to challenge page with next param (fallback to "/" if not safe)
+    # Fallback-safe next URL
     next_url = request.full_path or request.path or "/"
-    if next_url.startswith("/challenge"):
+    if not next_url or next_url.startswith("/challenge"):
         next_url = "/"
+
+    return redirect(url_for("challenge", next=next_url))
 
 # Routes
 @app.route("/challenge/auth", methods=["GET", "HEAD"])
@@ -72,7 +70,9 @@ def challenge():
     app.logger.debug(f"Request cookies: {request.cookies}")
     
     # Rebuild the full original URL (path + query params)
-    full_path = request.args.get("next", "/")
+    full_path = request.args.get("next") or "/"
+    if full_path.startswith("/challenge"):
+        full_path = "/"
     next_args = request.args.to_dict(flat=False)
 
     # If 'next' was passed in the query, use it
