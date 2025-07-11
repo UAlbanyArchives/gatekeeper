@@ -50,16 +50,18 @@ def skip_challenge_for_static_and_assets():
         return render_template("failed.html", reason="Too many failed verification attempts."), 403
 
     next_url = request.full_path or request.path or "/"
+    app.logger.debug(f"next_url from request.full_path: {next_url}")
     # Strip trailing '?' added by request.full_path if no query string
     if next_url.endswith('?'):
         next_url = next_url[:-1]
 
     # Manually encode the next_url to preserve the full query string
     encoded_next = quote(next_url, safe='')
+    app.logger.debug(f"Manually encoded next_url: {encoded_next}")
 
     # Build redirect manually to avoid double-encoding
     return redirect(f"/challenge?next={encoded_next}")
-    
+
 # Routes
 @app.route("/challenge/auth", methods=["GET", "HEAD"])
 def auth():
