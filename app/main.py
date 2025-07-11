@@ -101,7 +101,7 @@ def challenge():
             return "500 Verification failed", 500
 
         if result.get("success"):
-            app.logger.info(f"Verification succeeded. Redirecting to: {next_url}")
+            app.logger.debug(f"Verification succeeded. Redirecting to: {next_url}")
             response.set_cookie("turnstile_failures", "", max_age=0, path="/")
             response = make_response(redirect(next_url))
             response.set_cookie(
@@ -117,7 +117,10 @@ def challenge():
             return response
         else:
             app.logger.warning(f"Full response: {result}, IP: {request.remote_addr}")
-            failures = int(request.cookies.get("turnstile_failures", 0)) + 1
+            try:
+                failures = int(request.cookies.get("turnstile_failures", 0))
+            except (TypeError, ValueError):
+                failures = 0
             app.logger.warning(f"Verification failed attempt #{failures}")
 
             response = make_response(render_template("failed.html", next_url=next_url), 403)
