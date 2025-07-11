@@ -53,8 +53,9 @@ def skip_challenge_for_static_and_assets():
     if not next_url or next_url.startswith("/challenge"):
         next_url = "/"
 
-    app.logger.debug(f"Redirecting to challenge with next={next_url}")
-    return redirect(url_for("challenge", next=next_url))
+    encoded_next = quote(target_url)
+    app.logger.debug(f"Redirecting to challenge with next={unquote(encoded_next)}")
+    return redirect(url_for("challenge", next=encoded_next))
 
 # Routes
 @app.route("/challenge/auth", methods=["GET", "HEAD"])
@@ -69,11 +70,12 @@ def auth():
 def challenge():
     app.logger.debug(f"Request cookies: {request.cookies}")
     
-    next_url = request.args.get("next")
-    if not next_url:
+    encoded_next = request.args.get("next")
+    if not encoded_next:
         return render_template("failed.html", reason="Missing redirect target."), 403
 
-    # Prevent redirect loop:
+    next_url = unquote(encoded_next)  # decode back to original URL
+
     if next_url.startswith("/challenge"):
         return render_template("failed.html", reason="Invalid redirect target."), 403
 
@@ -106,7 +108,7 @@ def challenge():
             app.logger.debug(f"Verification succeeded. Redirecting to: {next_url}")
             if not next_url or next_url.startswith("/challenge"):
                 next_url = "/"
-            response = make_response(redirect(next_url))
+            response = make_response(redirect(unquote(encoded_next)))
             response.set_cookie(
                 "turnstile_verified",
                 "1",
