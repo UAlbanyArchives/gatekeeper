@@ -39,10 +39,12 @@ def skip_challenge_for_static_and_assets():
     if request.path == "/challenge":
         return
     
-    # Now do your Turnstile challenge logic for all other paths
-    cookie = request.cookies.get("turnstile_verified")
-    if cookie != "1":
-        # Redirect to challenge page or return challenge
+    # Now do the Turnstile challenge logic for all other paths
+    if request.cookies.get("turnstile_verified") != "1":
+        failures = int(request.cookies.get("turnstile_failures", 0))
+        if failures >= 3:
+            app.logger.warning("User exceeded max Turnstile attempts")
+            return render_template("failed.html", reason="Too many failed verification attempts."), 403
         return redirect(url_for("challenge", next=request.full_path))
 
 # Routes
@@ -100,6 +102,7 @@ def challenge():
 
         if result.get("success"):
             app.logger.info(f"Verification succeeded. Redirecting to: {next_url}")
+            response.set_cookie("turnstile_failures", "", max_age=0, path="/")
             response = make_response(redirect(next_url))
             response.set_cookie(
                 "turnstile_verified",
@@ -108,12 +111,24 @@ def challenge():
                 secure=True,
                 httponly=True,
                 samesite="Lax",
+                domain=".albany.edu",
                 path="/"
             )
             return response
         else:
-            app.logger.warning(f"Verification failed: {result}")
-            return render_template("failed.html", next_url=next_url), 403
+            app.logger.warning(f"Full response: {result}, IP: {request.remote_addr}")
+            failures = int(request.cookies.get("turnstile_failures", 0)) + 1
+            app.logger.warning(f"Verification failed attempt #{failures}")
+
+            response = make_response(render_template("failed.html", next_url=next_url), 403)
+            response.set_cookie(
+                "turnstile_failures",
+                str(failures),
+                max_age=600,  # 10 minutes
+                path="/",
+                samesite="Lax"
+            )
+            return response
     else:
         app.logger.debug("Received {request.method} request.")
 

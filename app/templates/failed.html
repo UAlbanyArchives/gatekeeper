@@ -141,6 +141,12 @@
 
             <h1>Verification Failed 403</h1>
 
+            {% if reason %}
+              <p>{{ reason }}</p>
+            {% else %}
+              <p>Verification failed. Please try again.</p>
+            {% endif %}
+
             <p>If you are human, please try again, and please <a href="https://albany.libwizard.com/f/contactus?i_have_a_questi=Special%20Collections%20%26%20Archives">Contact Us</a> if you continue to have issues.</p>
 
             <a href="/challenge?next={{ next_url }}" class="btn btn-primary btn-block">Retry</a>
