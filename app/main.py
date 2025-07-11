@@ -53,12 +53,9 @@ def skip_challenge_for_static_and_assets():
     if not next_url or next_url.startswith("/challenge"):
         next_url = "/"
 
-    # URL encode next_url before passing to url_for
-    encoded_next = quote(next_url, safe='')
+    app.logger.debug(f"Redirecting to challenge with next={next_url}")
+    return redirect(url_for("challenge", next=next_url))
 
-    app.logger.debug(f"Redirecting to challenge with next={next_url} (encoded: {encoded_next})")
-    return redirect(url_for("challenge", next=encoded_next))
-    
 # Routes
 @app.route("/challenge/auth", methods=["GET", "HEAD"])
 def auth():
@@ -73,9 +70,7 @@ def challenge():
     app.logger.debug(f"Request cookies: {request.cookies}")
     
     next_url = request.args.get("next")
-    if next_url:
-        next_url = unquote(next_url)
-    else:
+    if not next_url:
         return render_template("failed.html", reason="Missing redirect target."), 403
 
     # Prevent redirect loop:
