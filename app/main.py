@@ -91,14 +91,19 @@ def challenge():
     raw_next = request.args.get('next', '/')
     next_url = unquote(raw_next)
 
-    extra_params = {k: v for k, v in request.args.items() if k != 'next'}
+    # Parse the URL
+    scheme, netloc, path, query, fragment = urlsplit(next_url)
+    existing_params = dict(parse_qsl(query))
+
+    # Get extra params passed outside of 'next'
+    extra_params = {
+        k: v for k, v in request.args.items() if k != 'next' and k not in existing_params
+    }
+
+    # Only merge if needed
     if extra_params:
-        scheme, netloc, path, query, fragment = urlsplit(next_url)
-        existing_params = dict(parse_qsl(query))
         merged_params = {**existing_params, **extra_params}
-        # Build new query string for next_url
         new_query = urlencode(merged_params, doseq=True)
-        # Rebuild the full next_url with merged query params
         next_url = urlunsplit((scheme, netloc, path, new_query, fragment))
 
     # Block unsafe redirects
