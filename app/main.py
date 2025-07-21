@@ -1,5 +1,5 @@
 from flask import Flask, request, abort, make_response, redirect, render_template, url_for, send_from_directory
-from urllib.parse import unquote, urlencode, quote
+from urllib.parse import unquote, urlencode, quote, urlparse
 import logging
 import requests
 import os
@@ -71,6 +71,7 @@ def auth():
 def challenge():
     app.logger.debug(f"Request cookies: {request.cookies}")
     
+    """
     # Get all query params as a dict with lists (for repeated keys)
     query_params = request.args.to_dict(flat=False)
 
@@ -86,6 +87,15 @@ def challenge():
 
     # Now unquote to handle any encoded characters in next_url
     next_url = unquote(next_url)
+    """
+    raw_next = request.args.get('next', '/')
+    next_url = unquote(raw_next)
+
+    # Block unsafe redirects
+    parsed = urlparse(next_url)
+    if parsed.netloc and parsed.netloc != request.host:
+        app.logger.warning(f"Unsafe redirect blocked: {next_url}")
+        next_url = "/"
 
     # Prevent redirect loops
     if next_url.startswith("/challenge"):
@@ -154,7 +164,8 @@ def challenge():
     else:
         app.logger.debug(f"Received {request.method} request.")
 
-    return render_template("challenge.html", sitekey=TURNSTILE_SITEKEY, next_url=next_url)
+    encoded_next = quote(next_url, safe='/?:=&')
+    return render_template("challenge.html", sitekey=TURNSTILE_SITEKEY, next_url=encoded_next)
 
 if __name__ == "__main__":
     app.run()
