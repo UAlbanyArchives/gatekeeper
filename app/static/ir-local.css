@@ -1,0 +1,317 @@
+/*
+-----------------------------------------------
+bepress IR local stylesheet for Scholars Archive
+Author:   Lani Goto
+Version:  Jul 2014
+MODIFIED: For Gatekeeper Turnstile wrapper
+Using CSS gradients instead of external images
+-----------------------------------------------*/
+
+body {
+	background: #d9d6c8 url(/challenge/static/img/body-bg.png) top left repeat-x;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+	font-size: 15px;
+	color: #000;
+	margin: 0;
+	padding: 0;
+}
+
+#albany {
+	margin: 0;
+	padding: 0;
+}
+
+#albany #container {
+	width: 980px;
+	margin: 0 auto;
+	padding: 0;
+}
+
+/*Header */
+#albany #header {
+	height: 90px;
+	background-color: #fff;
+}
+
+#albany #header #top {
+	width: 980px;
+	height: 20px;
+	background-color: #fff;
+	padding: 0;
+	margin: 0;
+	display: block;
+}
+
+#albany #header #top #toplinks {
+	width: 365px;
+	height: 20px;
+	padding: 0;
+	margin: 0;
+	display: block;
+	float: right;
+	position: relative;
+	z-index: 10;
+}
+
+#albany #header #top #toplinks p,
+#albany #header #top #toplinks p a {
+	height: 12px;
+	line-height: 12px;
+	font-size: 12px;
+	font-weight: normal;
+	color: #333;
+	background-color: transparent;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	text-decoration: none;
+}
+
+#albany #header #top #toplinks p {
+	width: 365px;
+	padding-top: 10px;
+}
+
+#albany #header #top #toplinks p a {
+	padding: 0 11px;
+}
+
+#albany #header #top #toplinks a:hover,
+#albany #header #top #toplinks a:active,
+#albany #header #top #toplinks a:focus {
+	color: #000;
+	text-decoration: underline;
+}
+
+#albany #header #bottom {
+	width: 980px;
+	height: 70px;
+	padding: 0;
+	margin: 0;
+	display: block;
+	background-color: #fff;
+}
+
+#albany #header #bottom #pagetitle,
+#albany #header #bottom h1,
+#albany #header #bottom h1 a {
+	width: 980px;
+	height: 70px;
+	padding: 0;
+	margin: 0;
+	display: block;
+}
+
+#albany #header #bottom h1 {
+	padding: 0;
+	margin: 0;
+	text-align: center;
+	line-height: 70px;
+	font-size: 28px;
+	font-weight: normal;
+	color: #5e3385;
+	background-color: #fff;
+}
+
+#albany #header #bottom h1 a {
+	display: block;
+	text-decoration: none;
+	color: #5e3385;
+}
+
+#albany #header #bottom h1 a img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+
+#albany #header #bottom h1 a:hover {
+	color: #000099;
+}
+
+/* Navigation */
+#albany #navigation {
+	width: 980px;
+	height: 35px;
+	background: linear-gradient(to bottom, #5e3385, #4a2a6d);
+	border-bottom: 16px solid #fff;
+}
+
+#albany #navigation #tabs,
+#albany #navigation #tabs ul,
+#albany #navigation #tabs ul li {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+#albany #navigation #tabs a {
+	height: 35px;
+	line-height: 35px;
+	font-size: 12px;
+	font-weight: bold;
+	color: #fff;
+	background-color: transparent;
+	padding: 0 11px;
+	margin: 0;
+	border: 0;
+	border-right: 1px solid #735e87;
+	float: left;
+	text-decoration: none;
+	display: block;
+}
+
+#albany #navigation #tabs li#tabfour a {
+	border-right: none;
+}
+
+#albany #navigation #library,
+#albany #navigation #library a {
+	height: 35px;
+	line-height: 35px;
+	color: #fff;
+	margin-right: 5px;
+	display: block;
+	float: right;
+	text-decoration: none;
+}
+
+#albany #navigation #library a img {
+	display: block;
+	height: 35px;
+}
+
+#albany #navigation #tabs a:hover,
+#albany #navigation #tabs a:active,
+#albany #navigation #tabs a:focus {
+	text-decoration: underline;
+}
+
+/* Main Content */
+#albany #wrapper {
+	background: #fff;
+	min-height: 400px;
+}
+
+#albany #wrapper #content {
+	padding: 0;
+}
+
+#albany #wrapper #content #main.text {
+	padding: 20px;
+	line-height: 1.6em;
+}
+
+#albany #wrapper #content #main.text h1 {
+	font-size: 28px;
+	font-weight: normal;
+	line-height: 1.3em;
+	color: #5e3385;
+	margin: 0 0 20px 0;
+}
+
+#albany #wrapper #content #main.text p {
+	margin: 15px 0;
+	color: #333;
+}
+
+#albany #wrapper #content #main.text a {
+	color: #000099;
+	text-decoration: underline;
+}
+
+#albany #wrapper #content #main.text a:hover,
+#albany #wrapper #content #main.text a:active {
+	color: #5e3385;
+}
+
+.form-group {
+	margin-bottom: 15px;
+}
+
+.cf-turnstile {
+	margin: 20px 0;
+	display: flex;
+	justify-content: center;
+}
+
+#redirect-spinner {
+	text-align: center;
+	margin: 30px 0;
+}
+
+#redirect-spinner .spinner-border {
+	width: 3rem;
+	height: 3rem;
+	color: #5e3385;
+	border: 3px solid #d9d6c8;
+	border-right-color: #5e3385;
+	border-radius: 50%;
+	animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+	to { transform: rotate(360deg); }
+}
+
+#redirect-spinner p {
+	color: #5e3385;
+	font-weight: bold;
+	margin-top: 15px;
+}
+
+/* Footer */
+#albany #footer {
+	width: 980px;
+	height: auto;
+	background: #e5e5e5;
+	padding: 20px 0;
+	text-align: center;
+	clear: both;
+}
+
+#albany #footer #bepress {
+	padding: 20px;
+}
+
+#albany #footer #bepress p {
+	margin: 0;
+	font-size: 11px;
+	color: #575757;
+	line-height: 1.6em;
+}
+
+#albany #footer #bepress p a {
+	color: #000099;
+	text-decoration: underline;
+}
+
+#albany #footer #bepress p a:hover,
+#albany #footer #bepress p a:active,
+#albany #footer #bepress p a:focus {
+	color: #000;
+	text-decoration: underline;
+}
+
+#footer p:first-of-type {
+	padding-top: 0;
+}
+
+/* Utility */
+.mt-4 {
+	margin-top: 1.5rem !important;
+}
+
+.text-center {
+	text-align: center;
+}
+
+.text-primary {
+	color: #5e3385;
+}
+
+/* Hidden form elements */
+input[type="hidden"] {
+	display: none;
+}
+
