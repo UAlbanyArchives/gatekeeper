@@ -29,6 +29,8 @@ Serves on :8000 with above compose file
 
 ## Config
 
+### Basic Configuration
+
 Nginx config to proxy to Gatekeeper:
 ```
 location /challenge {
@@ -47,3 +49,16 @@ if ($http_cookie !~* "turnstile_verified=1") {
   return 302 /challenge?next=$request_uri;
 }
 ```
+
+### Template Wrapper Configuration
+
+The challenge and failure pages use a configurable wrapper template to support different styling and branding. Set the `TEMPLATE_WRAPPER` environment variable to specify which wrapper to use:
+
+```yaml
+environment:
+  - TURNSTILE_SECRET=your_turnstile_secret
+  - TURNSTILE_SITEKEY=your_turnstile_sitekey
+  - TEMPLATE_WRAPPER=archives.html    # or scholars_archive.html
+```
+
+To use a custom wrapper, add your template to `app/templates/` (e.g., `myapp.html`) and set `TEMPLATE_WRAPPER=myapp.html`.

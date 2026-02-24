@@ -16,6 +16,24 @@ TURNSTILE_SITEKEY = os.environ["TURNSTILE_SITEKEY"]
 # Get desired log level from environment (default: WARNING)
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "WARNING").upper()
 
+# Get template wrapper configuration (default: 'archives.html')
+# This allows different apps to use different wrapper templates with their own styling and navigation
+TEMPLATE_WRAPPER = os.environ.get("TEMPLATE_WRAPPER", "archives.html")
+
+# Contact URLs for each wrapper
+WRAPPER_CONFIG = {
+    "archives.html": {
+        "contact_url": "https://albany.libwizard.com/f/contactus?i_have_a_questi=Special%20Collections%20%26%20Archives"
+    },
+    "scholars_archive.html": {
+        "contact_url": "https://albany.libwizard.com/f/contactus?i_have_a_questi=Scholars%20Archive%20and%20Scholarly%20Communications"
+    }
+}
+
+def get_wrapper_config(key, default=None):
+    """Get configuration for current wrapper template"""
+    return WRAPPER_CONFIG.get(TEMPLATE_WRAPPER, {}).get(key, default)
+
 # Configure logging
 for handler in app.logger.handlers:
     app.logger.removeHandler(handler)
@@ -27,6 +45,15 @@ handler.setFormatter(formatter)
 
 app.logger.addHandler(handler)
 app.logger.setLevel(LOG_LEVEL)
+
+def render_challenge_template(template_name, **context):
+    """
+    Custom render function that injects the wrapper template and config into context.
+    This allows content templates to extend a configurable wrapper template.
+    """
+    context['wrapper_template'] = TEMPLATE_WRAPPER
+    context['contact_url'] = os.environ.get("CONTACT_URL") or get_wrapper_config("contact_url", "https://albany.libwizard.com/f/contactus")
+    return render_template(template_name, **context)
 
 @app.before_request
 def skip_challenge_for_static_and_assets():
@@ -47,7 +74,7 @@ def skip_challenge_for_static_and_assets():
 
     if failures >= 3:
         app.logger.warning("User exceeded max Turnstile attempts")
-        return render_template("failed.html", reason="Too many failed verification attempts."), 403
+        return render_challenge_template("failed.html", reason="Too many failed verification attempts."), 403
 
     next_url = request.url
     app.logger.debug(f"next_url from request.url: {next_url}")
@@ -114,7 +141,7 @@ def challenge():
 
     # Prevent redirect loops
     if next_url.startswith("/challenge"):
-        return render_template("failed.html", reason="Invalid redirect target."), 403
+        return render_challenge_template("failed.html", reason="Invalid redirect target."), 403
 
     app.logger.debug(f"Challenge requested. Method: {request.method}, reconstructed next_url: {next_url}")
 
@@ -124,7 +151,7 @@ def challenge():
 
         if not token:
             app.logger.warning("Turnstile token missing from POST.")
-            return render_template("failed.html", next_url=next_url), 403
+            return render_challenge_template("failed.html", next_url=next_url), 403
 
         try:
             resp = requests.post(
@@ -167,7 +194,7 @@ def challenge():
                 failures = 0
             app.logger.warning(f"Verification failed attempt #{failures}")
 
-            response = make_response(render_template("failed.html", next_url=next_url), 403)
+            response = make_response(render_challenge_template("failed.html", next_url=next_url), 403)
             response.set_cookie(
                 "turnstile_failures",
                 str(failures),
@@ -180,7 +207,7 @@ def challenge():
         app.logger.debug(f"Received {request.method} request.")
 
     encoded_next = quote(next_url, safe='/?:=&')
-    return render_template("challenge.html", sitekey=TURNSTILE_SITEKEY, next_url=encoded_next)
+    return render_challenge_template("challenge.html", sitekey=TURNSTILE_SITEKEY, next_url=encoded_next)
 
 if __name__ == "__main__":
     app.run()
