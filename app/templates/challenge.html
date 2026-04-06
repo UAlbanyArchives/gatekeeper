@@ -6,6 +6,29 @@
 {% endblock %}
 
 {% block page_styles %}
+  #albany #container {
+    width: 100%;
+    max-width: 980px;
+  }
+
+  #albany #wrapper #content,
+  #albany #wrapper #content #main.text,
+  #contentColumn {
+    overflow-x: hidden;
+  }
+
+  #main.text > .row,
+  #main.text > .row > .container.main-container {
+    margin: 0;
+    padding: 0;
+  }
+
+  #contentColumn p {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
     #verify-btn {
         color: #EBE6F0;
         background-color: #46166B;
