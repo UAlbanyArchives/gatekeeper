@@ -1,0 +1,4 @@
+* text=auto eol=crlf
+
+*.sh text eol=lf
+/apache/gatekeeper_map.py text eol=lf
