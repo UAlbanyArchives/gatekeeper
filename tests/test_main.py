@@ -1,6 +1,9 @@
+import hashlib
+import hmac
 import os
 import unittest
 from http.cookies import SimpleCookie
+import time
 from urllib.parse import parse_qs, urlsplit
 from unittest.mock import Mock, patch
 
@@ -216,10 +219,13 @@ class TurnstileSubmissionTests(GatekeeperTestCase):
 
         self.assertEqual(response.status_code, 403)
         self.assertIn(b"Verification Failed", response.data)
+        self.assertNotIn("gatekeeper_verified", self.response_cookies(response))
         post.assert_not_called()
 
     def test_successful_verification_sets_legacy_cookie_and_clears_failures(self):
+        started = int(time.time())
         response, post = self.post_challenge()
+        completed = int(time.time())
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.location, "/records?q=example")
@@ -231,6 +237,30 @@ class TurnstileSubmissionTests(GatekeeperTestCase):
         self.assertEqual(cookies["turnstile_verified"]["samesite"], "None")
         self.assertEqual(cookies["turnstile_verified"]["path"], "/")
         self.assertEqual(cookies["turnstile_verified"]["domain"], "albany.edu")
+        self.assertIn("gatekeeper_verified", cookies)
+        signed_value = cookies["gatekeeper_verified"].value
+        version, expiry, signature = signed_value.split(".")
+        self.assertEqual(version, "v1")
+        self.assertEqual(
+            cookies["gatekeeper_verified"]["max-age"],
+            str(main.GATEKEEPER_COOKIE_TTL),
+        )
+        self.assertTrue(cookies["gatekeeper_verified"]["secure"])
+        self.assertTrue(cookies["gatekeeper_verified"]["httponly"])
+        self.assertEqual(cookies["gatekeeper_verified"]["samesite"], "Lax")
+        self.assertEqual(cookies["gatekeeper_verified"]["path"], "/")
+        self.assertFalse(cookies["gatekeeper_verified"]["domain"])
+        self.assertGreaterEqual(
+            int(expiry), started + main.GATEKEEPER_COOKIE_TTL
+        )
+        self.assertLessEqual(
+            int(expiry), completed + main.GATEKEEPER_COOKIE_TTL
+        )
+        message = "{}|v1|{}".format(main.GATEKEEPER_HOSTNAME, expiry).encode("ascii")
+        expected_signature = hmac.new(
+            main.GATEKEEPER_KEY, message, hashlib.sha256
+        ).hexdigest()
+        self.assertEqual(signature, expected_signature)
         self.assertEqual(cookies["turnstile_failures"]["max-age"], "0")
         post.assert_called_once()
         self.assertEqual(
@@ -245,7 +275,6 @@ class TurnstileSubmissionTests(GatekeeperTestCase):
                 "remoteip": "127.0.0.1",
             },
         )
-
     def test_failed_verification_returns_forbidden_and_sets_failure_cookie(self):
         response, post = self.post_challenge({"success": False})
 
@@ -255,6 +284,7 @@ class TurnstileSubmissionTests(GatekeeperTestCase):
         self.assertEqual(cookies["turnstile_failures"]["max-age"], "600")
         self.assertEqual(cookies["turnstile_failures"]["samesite"], "Lax")
         self.assertNotIn("turnstile_verified", cookies)
+        self.assertNotIn("gatekeeper_verified", cookies)
         post.assert_called_once()
 
     def test_invalid_failure_count_is_reset_when_verification_fails(self):

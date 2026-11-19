@@ -4,6 +4,8 @@ import logging
 import requests
 import os
 
+from app.gatekeeper_cookie import create_gatekeeper_cookie, load_gatekeeper_config
+
 app = Flask(
     __name__,
     static_url_path="/challenge/static",
@@ -12,6 +14,7 @@ app = Flask(
 
 TURNSTILE_SECRET = os.environ["TURNSTILE_SECRET"]
 TURNSTILE_SITEKEY = os.environ["TURNSTILE_SITEKEY"]
+GATEKEEPER_KEY, GATEKEEPER_HOSTNAME, GATEKEEPER_COOKIE_TTL = load_gatekeeper_config()
 
 # Get desired log level from environment (default: WARNING)
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "WARNING").upper()
@@ -96,8 +99,6 @@ def auth():
 
 @app.route("/challenge", methods=["GET", "POST"])
 def challenge():
-    app.logger.debug(f"Request cookies: {request.cookies}")
-    
     """
     # Get all query params as a dict with lists (for repeated keys)
     query_params = request.args.to_dict(flat=False)
@@ -147,7 +148,6 @@ def challenge():
 
     if request.method == "POST":
         token = request.form.get("cf-turnstile-response")
-        app.logger.debug(f"Received POST with Turnstile token: {token}")
 
         if not token:
             app.logger.warning("Turnstile token missing from POST.")
@@ -163,13 +163,12 @@ def challenge():
                 }
             )
             result = resp.json()
-            app.logger.debug(f"Cloudflare response: {result}")
-        except Exception as e:
-            app.logger.error(f"Error contacting Cloudflare: {e}")
+        except Exception:
+            app.logger.error("Error contacting Cloudflare")
             return "500 Verification failed", 500
 
         if result.get("success"):
-            app.logger.debug(f"Verification succeeded. Redirecting to: {next_url}")
+            app.logger.debug("Turnstile verification succeeded")
             if not next_url or next_url.startswith("/challenge"):
                 next_url = "/"
             response = make_response(redirect(next_url))
@@ -183,11 +182,24 @@ def challenge():
                 domain=".albany.edu",
                 path="/"
             )
+            response.set_cookie(
+                "gatekeeper_verified",
+                create_gatekeeper_cookie(
+                    GATEKEEPER_HOSTNAME,
+                    GATEKEEPER_COOKIE_TTL,
+                    GATEKEEPER_KEY,
+                ),
+                max_age=GATEKEEPER_COOKIE_TTL,
+                secure=True,
+                httponly=True,
+                samesite="Lax",
+                path="/",
+            )
             # Clear failure count
             response.set_cookie("turnstile_failures", "", max_age=0, path="/")
             return response
         else:
-            app.logger.warning(f"Full response: {result}, IP: {request.remote_addr}")
+            app.logger.warning(f"Turnstile verification failed, IP: {request.remote_addr}")
             try:
                 failures = int(request.cookies.get("turnstile_failures", 0))
             except (TypeError, ValueError):
