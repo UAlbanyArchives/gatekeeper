@@ -1,0 +1,17 @@
+services:
+  turnstile-proxy:
+    build: .
+    ports:
+      - "127.0.0.1:8000:5000"
+    restart: always
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      TURNSTILE_SECRET: ${TURNSTILE_SECRET}
+      TURNSTILE_SITEKEY: ${TURNSTILE_SITEKEY}
+      TEMPLATE_WRAPPER: ${TEMPLATE_WRAPPER:-archives.html}
+
+      GATEKEEPER_KEY_FILE: /run/secrets/gatekeeper_signing_key
+      GATEKEEPER_HOSTNAME: ${GATEKEEPER_HOSTNAME:-archives.albany.edu}
+      GATEKEEPER_COOKIE_TTL: ${GATEKEEPER_COOKIE_TTL:-1800}
+    volumes:
+      - ${GATEKEEPER_KEY_PATH}:/run/secrets/gatekeeper_signing_key:ro

@@ -6,8 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
-# compose file has local config
-docker-compose.yml
+# dev test key
+dev-signing.key
 
 # Distribution / packaging
 .Python
