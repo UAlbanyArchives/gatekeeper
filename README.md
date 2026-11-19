@@ -62,3 +62,15 @@ environment:
 ```
 
 To use a custom wrapper, add your template to `app/templates/` (e.g., `myapp.html`) and set `TEMPLATE_WRAPPER=myapp.html`.
+
+## Tests
+
+Install dependencies and run the test suite with coverage:
+
+```
+pip install -r requirements.txt
+pytest
+```
+
+Pytest is configured to measure branch coverage for `app.main` and enforce at
+least 95% coverage.
