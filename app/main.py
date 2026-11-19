@@ -4,7 +4,11 @@ import logging
 import requests
 import os
 
-from app.gatekeeper_cookie import create_gatekeeper_cookie, load_gatekeeper_config
+from app.gatekeeper_cookie import (
+    create_gatekeeper_cookie,
+    load_gatekeeper_config,
+    verify_gatekeeper_cookie,
+)
 
 app = Flask(
     __name__,
@@ -67,7 +71,12 @@ def skip_challenge_for_static_and_assets():
     if request.path.startswith("/challenge"):
         return
 
-    if request.cookies.get("turnstile_verified") == "1":
+    if verify_gatekeeper_cookie(
+        request.cookies.get("gatekeeper_verified"),
+        GATEKEEPER_HOSTNAME,
+        GATEKEEPER_COOKIE_TTL,
+        GATEKEEPER_KEY,
+    ):
         return
 
     try:
@@ -91,9 +100,12 @@ def skip_challenge_for_static_and_assets():
 # Routes
 @app.route("/challenge/auth", methods=["GET", "HEAD"])
 def auth():
-    cookie = request.cookies.get("turnstile_verified")
-    app.logger.debug(f"turnstile_verified cookie: {cookie}")
-    if cookie == "1":
+    if verify_gatekeeper_cookie(
+        request.cookies.get("gatekeeper_verified"),
+        GATEKEEPER_HOSTNAME,
+        GATEKEEPER_COOKIE_TTL,
+        GATEKEEPER_KEY,
+    ):
         return "", 200
     return "", 401
 
@@ -172,16 +184,6 @@ def challenge():
             if not next_url or next_url.startswith("/challenge"):
                 next_url = "/"
             response = make_response(redirect(next_url))
-            response.set_cookie(
-                "turnstile_verified",
-                "1",
-                max_age=8 * 3600,  # Set for 8 hours as 3600 is an hour
-                secure=True,
-                httponly=True,
-                samesite="None",
-                domain=".albany.edu",
-                path="/"
-            )
             response.set_cookie(
                 "gatekeeper_verified",
                 create_gatekeeper_cookie(

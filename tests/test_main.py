@@ -43,6 +43,15 @@ class GatekeeperTestCase(unittest.TestCase):
     def set_cookie(self, name, value):
         self.client.set_cookie(name, value, domain="archives.albany.edu")
 
+    def set_signed_cookie(self, now=None):
+        value = main.create_gatekeeper_cookie(
+            main.GATEKEEPER_HOSTNAME,
+            main.GATEKEEPER_COOKIE_TTL,
+            main.GATEKEEPER_KEY,
+            now=int(time.time()) if now is None else now,
+        )
+        self.set_cookie("gatekeeper_verified", value)
+
 
 class RequestGateTests(GatekeeperTestCase):
     def test_unverified_request_redirects_to_challenge_with_full_url(self):
@@ -56,19 +65,26 @@ class RequestGateTests(GatekeeperTestCase):
             ["https://archives.albany.edu/records?q=one&tag=two"],
         )
 
-    def test_legacy_cookie_value_allows_protected_request(self):
-        self.set_cookie("turnstile_verified", "1")
+    def test_signed_cookie_allows_protected_request(self):
+        self.set_signed_cookie()
 
         response = self.client.get("/records", base_url=self.base_url)
 
         self.assertEqual(response.status_code, 404)
 
-    def test_other_cookie_values_do_not_authorize_request(self):
+    def test_legacy_cookie_does_not_authorize_protected_request(self):
+        self.set_cookie("turnstile_verified", "1")
+
+        response = self.client.get("/records", base_url=self.base_url)
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_invalid_signed_cookie_values_do_not_authorize_request(self):
         for value in ("true", "0", "1anything", ""):
             with self.subTest(value=value):
                 client = main.app.test_client()
                 client.set_cookie(
-                    "turnstile_verified", value, domain="archives.albany.edu"
+                    "gatekeeper_verified", value, domain="archives.albany.edu"
                 )
 
                 response = client.get("/records", base_url=self.base_url)
@@ -115,17 +131,17 @@ class RequestGateTests(GatekeeperTestCase):
 
 
 class AuthEndpointTests(GatekeeperTestCase):
-    def test_auth_endpoint_rejects_missing_or_nonliteral_cookie(self):
+    def test_auth_endpoint_rejects_missing_or_invalid_signed_cookie(self):
         self.assertEqual(
             self.client.get("/challenge/auth", base_url=self.base_url).status_code, 401
         )
-        self.set_cookie("turnstile_verified", "true")
+        self.set_cookie("gatekeeper_verified", "invalid")
         self.assertEqual(
             self.client.get("/challenge/auth", base_url=self.base_url).status_code, 401
         )
 
-    def test_auth_endpoint_accepts_legacy_cookie_for_get_and_head(self):
-        self.set_cookie("turnstile_verified", "1")
+    def test_auth_endpoint_accepts_signed_cookie_for_get_and_head(self):
+        self.set_signed_cookie()
 
         self.assertEqual(
             self.client.get("/challenge/auth", base_url=self.base_url).status_code, 200
@@ -222,7 +238,7 @@ class TurnstileSubmissionTests(GatekeeperTestCase):
         self.assertNotIn("gatekeeper_verified", self.response_cookies(response))
         post.assert_not_called()
 
-    def test_successful_verification_sets_legacy_cookie_and_clears_failures(self):
+    def test_successful_verification_sets_signed_cookie_only_and_clears_failures(self):
         started = int(time.time())
         response, post = self.post_challenge()
         completed = int(time.time())
@@ -230,13 +246,7 @@ class TurnstileSubmissionTests(GatekeeperTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.location, "/records?q=example")
         cookies = self.response_cookies(response)
-        self.assertEqual(cookies["turnstile_verified"].value, "1")
-        self.assertEqual(cookies["turnstile_verified"]["max-age"], "28800")
-        self.assertEqual(cookies["turnstile_verified"]["secure"], True)
-        self.assertEqual(cookies["turnstile_verified"]["httponly"], True)
-        self.assertEqual(cookies["turnstile_verified"]["samesite"], "None")
-        self.assertEqual(cookies["turnstile_verified"]["path"], "/")
-        self.assertEqual(cookies["turnstile_verified"]["domain"], "albany.edu")
+        self.assertNotIn("turnstile_verified", cookies)
         self.assertIn("gatekeeper_verified", cookies)
         signed_value = cookies["gatekeeper_verified"].value
         version, expiry, signature = signed_value.split(".")
@@ -283,7 +293,6 @@ class TurnstileSubmissionTests(GatekeeperTestCase):
         self.assertEqual(cookies["turnstile_failures"].value, "0")
         self.assertEqual(cookies["turnstile_failures"]["max-age"], "600")
         self.assertEqual(cookies["turnstile_failures"]["samesite"], "Lax")
-        self.assertNotIn("turnstile_verified", cookies)
         self.assertNotIn("gatekeeper_verified", cookies)
         post.assert_called_once()
 

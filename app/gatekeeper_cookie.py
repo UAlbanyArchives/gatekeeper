@@ -6,6 +6,8 @@ import time
 
 
 _HEX_KEY = re.compile(r"[0-9a-fA-F]{64}\Z")
+_COOKIE_PATTERN = re.compile(r"v1\.([0-9]+)\.([0-9a-f]{64})\Z")
+_MAX_COOKIE_LENGTH = 80
 
 
 def load_signing_key(path):
@@ -60,3 +62,21 @@ def create_gatekeeper_cookie(hostname, ttl, key, now=None):
     message = "{}|v1|{}".format(hostname.lower(), expiry).encode("ascii")
     signature = hmac.new(key, message, hashlib.sha256).hexdigest()
     return "v1.{}.{}".format(expiry, signature)
+
+
+def verify_gatekeeper_cookie(cookie, hostname, max_lifetime, key, now=None):
+    if not cookie or len(cookie) > _MAX_COOKIE_LENGTH:
+        return False
+
+    match = _COOKIE_PATTERN.fullmatch(cookie)
+    if not match:
+        return False
+
+    expiry = int(match.group(1))
+    current_time = int(time.time() if now is None else now)
+    if expiry <= current_time or expiry > current_time + max_lifetime:
+        return False
+
+    message = "{}|v1|{}".format(hostname.lower(), expiry).encode("ascii")
+    expected_signature = hmac.new(key, message, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(match.group(2), expected_signature)

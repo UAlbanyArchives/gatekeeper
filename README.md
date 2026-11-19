@@ -50,6 +50,57 @@ if ($http_cookie !~* "turnstile_verified=1") {
 }
 ```
 
+### Apache Deployment
+
+The Apache host validates `gatekeeper_verified` locally with a persistent
+Python `RewriteMap prg:` process. It does not call Flask for protected requests.
+Apache needs `mod_rewrite`, `mod_proxy`, and `mod_proxy_http` enabled, plus
+Python 3.6.8 or newer at `/usr/bin/python3`. The verifier uses only Python's
+standard library.
+
+#### Share the signing key
+
+Generate one random key file on the Apache host. The same file is mounted
+read-only into Flask by Docker Compose:
+
+```sh
+sudo install -d -o root -g apache -m 0750 /etc/httpd
+sudo sh -c 'umask 077; openssl rand -hex 32 > /etc/httpd/gatekeeper.key'
+sudo chown root:apache /etc/httpd/gatekeeper.key
+sudo chmod 0640 /etc/httpd/gatekeeper.key
+```
+
+Set `GATEKEEPER_KEY_PATH=/etc/httpd/gatekeeper.key` in the untracked `.env`
+file used by Compose. Apache and Flask must read this same key. Verify that
+the `apache` account can read it and that SELinux policy allows access.
+Use separate key files for development and production; never paste the key
+into Apache configuration or commit it.
+
+#### Install the verifier
+
+Copy `apache/gatekeeper_map.py` from this repository to a root-owned location
+on the host. For example:
+
+```sh
+sudo install -d -o root -g root -m 0755 /usr/local/libexec/gatekeeper
+sudo install -o root -g root -m 0755 apache/gatekeeper_map.py /usr/local/libexec/gatekeeper/gatekeeper_map.py
+```
+
+The script is self-contained and does not need the Flask application files or
+any Python packages. Test that the Apache service account can start it and
+read the key before changing the virtual-host configuration:
+
+```sh
+sudo -u apache /usr/bin/python3 \
+  /usr/local/libexec/gatekeeper/gatekeeper_map.py \
+  /etc/httpd/gatekeeper.key archives.albany.edu 1800 </dev/null
+```
+
+For a valid key and arguments the process exits successfully without output
+when stdin is closed. Configuration errors are written to stderr; do not enable
+Apache rewrite trace logging in production because it can disclose request
+details.
+
 ### Template Wrapper Configuration
 
 The challenge and failure pages use a configurable wrapper template to support
@@ -66,6 +117,3 @@ Install dependencies and run the test suite with coverage:
 pip install -r requirements.txt
 pytest
 ```
-
-Pytest is configured to measure branch coverage for `app.main` and enforce at
-least 95% coverage.

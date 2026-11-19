@@ -8,6 +8,7 @@ from app.gatekeeper_cookie import (
     create_gatekeeper_cookie,
     load_gatekeeper_config,
     load_signing_key,
+    verify_gatekeeper_cookie,
 )
 
 
@@ -209,3 +210,42 @@ def test_cookie_signer_normalizes_hostname_to_lowercase():
     lowercase = create_gatekeeper_cookie("archives.albany.edu", 1800, KEY, now=1000)
 
     assert mixed_case == lowercase
+
+
+def test_cookie_verifier_accepts_a_valid_signed_cookie():
+    cookie = create_gatekeeper_cookie("Archives.Albany.EDU", 1800, KEY, now=1000)
+
+    assert verify_gatekeeper_cookie(
+        cookie, "archives.albany.edu", 1800, KEY, now=1000
+    )
+
+
+@pytest.mark.parametrize(
+    "cookie",
+    [
+        "",
+        "1",
+        "v1.invalid.signature",
+        "v1.2800." + "0" * 64,
+    ],
+)
+def test_cookie_verifier_rejects_malformed_or_invalid_cookies(cookie):
+    assert not verify_gatekeeper_cookie(
+        cookie, "archives.albany.edu", 1800, KEY, now=1000
+    )
+
+
+def test_cookie_verifier_rejects_expired_cookie():
+    cookie = create_gatekeeper_cookie("archives.albany.edu", 1800, KEY, now=1000)
+
+    assert not verify_gatekeeper_cookie(
+        cookie, "archives.albany.edu", 1800, KEY, now=2800
+    )
+
+
+def test_cookie_verifier_rejects_cookie_for_another_hostname():
+    cookie = create_gatekeeper_cookie("archives.albany.edu", 1800, KEY, now=1000)
+
+    assert not verify_gatekeeper_cookie(
+        cookie, "scholars.albany.edu", 1800, KEY, now=1000
+    )
