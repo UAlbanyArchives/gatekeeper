@@ -106,6 +106,17 @@ when stdin is closed. Configuration errors are written to stderr; do not enable
 Apache rewrite trace logging in production because it can disclose request
 details.
 
+#### Observational v2 verifier
+
+`apache/gatekeeper_observe_map.py` is a separate, self-contained Python 3.6+
+standard-library process. It accepts the same key-file, hostname, and maximum
+lifetime arguments as the v1 verifier. For each v2 cookie on stdin it emits
+`VALID:<session_id>` or `INVALID`, flushing each response. The session ID is
+the first 16 hexadecimal characters of SHA-256 of the nonce's ASCII text.
+Treat session IDs as pseudonymous observations. Do not log raw cookies,
+signatures, nonces, or signing keys. This observer is not an authorization
+mechanism and does not change the existing Apache configuration.
+
 ### Template Wrapper Configuration
 
 The challenge and failure pages use a configurable wrapper template to support
