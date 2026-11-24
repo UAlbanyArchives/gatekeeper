@@ -6,6 +6,7 @@ import os
 
 from app.gatekeeper_cookie import (
     create_gatekeeper_cookie,
+    create_observe_cookie,
     load_gatekeeper_config,
     verify_gatekeeper_cookie,
 )
@@ -187,6 +188,19 @@ def challenge():
             response.set_cookie(
                 "gatekeeper_verified",
                 create_gatekeeper_cookie(
+                    GATEKEEPER_HOSTNAME,
+                    GATEKEEPER_COOKIE_TTL,
+                    GATEKEEPER_KEY,
+                ),
+                max_age=GATEKEEPER_COOKIE_TTL,
+                secure=True,
+                httponly=True,
+                samesite="Lax",
+                path="/",
+            )
+            response.set_cookie(
+                "gatekeeper_observe",
+                create_observe_cookie(
                     GATEKEEPER_HOSTNAME,
                     GATEKEEPER_COOKIE_TTL,
                     GATEKEEPER_KEY,

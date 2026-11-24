@@ -79,6 +79,18 @@ class RequestGateTests(GatekeeperTestCase):
 
         self.assertEqual(response.status_code, 302)
 
+    def test_observe_cookie_does_not_authorize_protected_request(self):
+        self.set_cookie(
+            "gatekeeper_observe",
+            main.create_observe_cookie(
+                main.GATEKEEPER_HOSTNAME, main.GATEKEEPER_COOKIE_TTL, main.GATEKEEPER_KEY
+            ),
+        )
+
+        response = self.client.get("/records", base_url=self.base_url)
+
+        self.assertEqual(response.status_code, 302)
+
     def test_invalid_signed_cookie_values_do_not_authorize_request(self):
         for value in ("true", "0", "1anything", ""):
             with self.subTest(value=value):
@@ -131,6 +143,18 @@ class RequestGateTests(GatekeeperTestCase):
 
 
 class AuthEndpointTests(GatekeeperTestCase):
+    def test_observe_cookie_does_not_authorize_auth_endpoint(self):
+        self.set_cookie(
+            "gatekeeper_observe",
+            main.create_observe_cookie(
+                main.GATEKEEPER_HOSTNAME, main.GATEKEEPER_COOKIE_TTL, main.GATEKEEPER_KEY
+            ),
+        )
+
+        self.assertEqual(
+            self.client.get("/challenge/auth", base_url=self.base_url).status_code, 401
+        )
+
     def test_auth_endpoint_rejects_missing_or_invalid_signed_cookie(self):
         self.assertEqual(
             self.client.get("/challenge/auth", base_url=self.base_url).status_code, 401
@@ -238,7 +262,7 @@ class TurnstileSubmissionTests(GatekeeperTestCase):
         self.assertNotIn("gatekeeper_verified", self.response_cookies(response))
         post.assert_not_called()
 
-    def test_successful_verification_sets_signed_cookie_only_and_clears_failures(self):
+    def test_successful_verification_sets_both_cookies_and_clears_failures(self):
         started = int(time.time())
         response, post = self.post_challenge()
         completed = int(time.time())
@@ -271,6 +295,20 @@ class TurnstileSubmissionTests(GatekeeperTestCase):
             main.GATEKEEPER_KEY, message, hashlib.sha256
         ).hexdigest()
         self.assertEqual(signature, expected_signature)
+        self.assertIn("gatekeeper_observe", cookies)
+        observe_cookie = cookies["gatekeeper_observe"]
+        observe_version, observe_expiry, nonce, observe_signature = observe_cookie.value.split(".")
+        self.assertEqual(observe_version, "v2")
+        self.assertRegex(nonce, r"^[0-9a-f]{32}$")
+        self.assertRegex(observe_signature, r"^[0-9a-f]{64}$")
+        self.assertGreaterEqual(int(observe_expiry), started + main.GATEKEEPER_COOKIE_TTL)
+        self.assertLessEqual(int(observe_expiry), completed + main.GATEKEEPER_COOKIE_TTL)
+        self.assertEqual(observe_cookie["max-age"], str(main.GATEKEEPER_COOKIE_TTL))
+        self.assertTrue(observe_cookie["secure"])
+        self.assertTrue(observe_cookie["httponly"])
+        self.assertEqual(observe_cookie["samesite"], "Lax")
+        self.assertEqual(observe_cookie["path"], "/")
+        self.assertFalse(observe_cookie["domain"])
         self.assertEqual(cookies["turnstile_failures"]["max-age"], "0")
         post.assert_called_once()
         self.assertEqual(
@@ -285,6 +323,15 @@ class TurnstileSubmissionTests(GatekeeperTestCase):
                 "remoteip": "127.0.0.1",
             },
         )
+
+    def test_successful_verifications_generate_distinct_observe_nonces(self):
+        first, _ = self.post_challenge()
+        second, _ = self.post_challenge()
+
+        first_nonce = self.response_cookies(first)["gatekeeper_observe"].value.split(".")[2]
+        second_nonce = self.response_cookies(second)["gatekeeper_observe"].value.split(".")[2]
+        self.assertNotEqual(first_nonce, second_nonce)
+
     def test_failed_verification_returns_forbidden_and_sets_failure_cookie(self):
         response, post = self.post_challenge({"success": False})
 
@@ -294,6 +341,7 @@ class TurnstileSubmissionTests(GatekeeperTestCase):
         self.assertEqual(cookies["turnstile_failures"]["max-age"], "600")
         self.assertEqual(cookies["turnstile_failures"]["samesite"], "Lax")
         self.assertNotIn("gatekeeper_verified", cookies)
+        self.assertNotIn("gatekeeper_observe", cookies)
         post.assert_called_once()
 
     def test_invalid_failure_count_is_reset_when_verification_fails(self):

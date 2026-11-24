@@ -28,9 +28,11 @@ def test_success_does_not_log_key_signed_cookie_or_turnstile_token(caplog):
     for header in response.headers.getlist("Set-Cookie"):
         cookies.load(header)
     signed_cookie = cookies["gatekeeper_verified"].value
+    observe_cookie = cookies["gatekeeper_observe"].value
 
     assert response.status_code == 302
     assert main.GATEKEEPER_KEY.hex() not in caplog.text
     assert signed_cookie not in caplog.text
+    assert observe_cookie not in caplog.text
     assert turnstile_token not in caplog.text
     assert cloudflare_response_token not in caplog.text

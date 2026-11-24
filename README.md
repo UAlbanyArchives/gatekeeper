@@ -29,6 +29,11 @@ exactly 64 hexadecimal characters (32 bytes when decoded). The example uses a
 1800-second TTL and `archives.albany.edu`; use separate private key files for
 development and production, and do not commit or log key contents.
 
+After successful verification, Flask also issues `gatekeeper_observe`, a
+host-only, signed v2 cookie with a random nonce and the same configured
+lifetime. It is observational only: authorization continues to use the
+existing `gatekeeper_verified` v1 cookie.
+
 ### Basic Configuration
 
 Nginx config to proxy to Gatekeeper:

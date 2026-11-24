@@ -6,6 +6,7 @@ import pytest
 
 from app.gatekeeper_cookie import (
     create_gatekeeper_cookie,
+    create_observe_cookie,
     load_gatekeeper_config,
     load_signing_key,
     verify_gatekeeper_cookie,
@@ -181,6 +182,19 @@ def test_cookie_matches_independently_calculated_hmac():
     expected_signature = hmac.new(KEY, message, hashlib.sha256).hexdigest()
 
     assert cookie == "v1.{}.{}".format(expiry, expected_signature)
+
+
+def test_observe_cookie_matches_independently_calculated_hmac():
+    nonce = "0123456789abcdef" * 2
+    with patch("app.gatekeeper_cookie.secrets.token_hex", return_value=nonce) as token_hex:
+        cookie = create_observe_cookie("Archives.Albany.EDU", 1800, KEY, now=1795113000)
+
+    expiry = 1795113000 + 1800
+    message = "archives.albany.edu|v2|{}|{}".format(expiry, nonce).encode("ascii")
+    expected_signature = hmac.new(KEY, message, hashlib.sha256).hexdigest()
+
+    token_hex.assert_called_once_with(16)
+    assert cookie == "v2.{}.{}.{}".format(expiry, nonce, expected_signature)
 
 
 def test_cookie_signing_is_deterministic_for_identical_inputs():

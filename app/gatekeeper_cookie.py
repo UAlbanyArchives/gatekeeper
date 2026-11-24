@@ -2,6 +2,7 @@ import hashlib
 import hmac
 import os
 import re
+import secrets
 import time
 
 
@@ -62,6 +63,14 @@ def create_gatekeeper_cookie(hostname, ttl, key, now=None):
     message = "{}|v1|{}".format(hostname.lower(), expiry).encode("ascii")
     signature = hmac.new(key, message, hashlib.sha256).hexdigest()
     return "v1.{}.{}".format(expiry, signature)
+
+
+def create_observe_cookie(hostname, ttl, key, now=None):
+    expiry = int(time.time() if now is None else now) + ttl
+    nonce = secrets.token_hex(16)
+    message = "{}|v2|{}|{}".format(hostname.lower(), expiry, nonce).encode("ascii")
+    signature = hmac.new(key, message, hashlib.sha256).hexdigest()
+    return "v2.{}.{}.{}".format(expiry, nonce, signature)
 
 
 def verify_gatekeeper_cookie(cookie, hostname, max_lifetime, key, now=None):
